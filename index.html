@@ -1,0 +1,2937 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full overflow-hidden" id="root-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>出口系統管理 - AR帳款追蹤回報整合系統</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --primary-blue: #2563eb;
+      --primary-dark: #1d4ed8;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+    }
+
+    html, body {
+      height: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      font-family: 'Inter', 'Noto Sans TC', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .sidebar-scroll {
+      overflow-y: auto !important;
+      scrollbar-width: thin;
+      scrollbar-color: #3b82f6 #0f172a;
+    }
+    .sidebar-scroll::-webkit-scrollbar { width: 6px; }
+    .sidebar-scroll::-webkit-scrollbar-track { background: #0f172a; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 3px; }
+
+    #sidebar.collapsed {
+      width: 78px !important;
+    }
+    #sidebar.collapsed .sidebar-text,
+    #sidebar.collapsed .sidebar-submenu,
+    #sidebar.collapsed .sidebar-group-label {
+      display: none !important;
+    }
+    #sidebar.collapsed .sidebar-header {
+      padding: 0 10px !important;
+      justify-content: center !important;
+      gap: 6px !important;
+    }
+
+    .main-scroll {
+      overflow-y: auto !important;
+      scrollbar-width: thin;
+      scrollbar-color: #94a3b8 #f1f5f9;
+    }
+    .main-scroll::-webkit-scrollbar { width: 8px; }
+    .main-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+    .main-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .main-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .table-scroll {
+      overflow-y: auto !important;
+      max-height: 280px;
+      scrollbar-width: thin;
+      scrollbar-color: #94a3b8 #f8fafc;
+    }
+    .table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .table-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+    .table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+
+    .btn-func, .btn-batch {
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    .btn-func {
+      background: #ffffff;
+      border: 1.5px solid var(--slate-300);
+      color: var(--slate-800);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-func:hover {
+      background: var(--slate-100);
+      border-color: var(--slate-400);
+      color: var(--slate-900);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-batch {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      border: 1.5px solid var(--primary-dark);
+      box-shadow: 0 2px 5px rgba(37, 99, 235, 0.25);
+    }
+    .btn-batch:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-compact {
+      height: 32px;
+      padding: 0 11px;
+      font-size: 12.5px;
+      border-radius: var(--radius-sm);
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .custom-table th {
+      background-color: #f1f5f9;
+      color: var(--slate-900);
+      font-weight: 800;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--slate-300);
+      border-right: 1px solid var(--slate-200);
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .custom-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--slate-200);
+      border-right: 1px solid var(--slate-200);
+      color: var(--slate-900);
+      vertical-align: middle;
+      font-size: 13.5px;
+    }
+
+    .custom-table td:last-child { border-right: none; }
+    .custom-table tr:last-child td { border-bottom: none; }
+    .custom-table tbody tr:hover { background-color: #f8fafc; }
+
+    .multiselect-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .multiselect-btn {
+      background: #ffffff;
+      border: 1.5px solid var(--slate-300);
+      padding: 5px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--slate-800);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      height: 36px;
+      box-shadow: var(--shadow-xs);
+      transition: all 0.15s ease;
+    }
+    .multiselect-btn:hover {
+      background-color: #f8fafc;
+      border-color: #64748b;
+    }
+
+    .multiselect-panel {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 5px;
+      background: #ffffff;
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-md);
+      box-shadow: 0 12px 28px -5px rgba(15, 23, 42, 0.2);
+      padding: 6px 0;
+      min-width: 260px;
+      max-height: 340px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+
+    .dropdown-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      background: var(--slate-100);
+      border-bottom: 1px solid var(--slate-200);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .multiselect-option {
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-800);
+      user-select: none;
+      transition: background-color 0.12s ease;
+    }
+    .multiselect-option:hover {
+      background-color: #eff6ff;
+      color: var(--primary-dark);
+    }
+
+    .customer-accordion-card {
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-xs);
+      overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+    .customer-accordion-card:hover {
+      border-color: #94a3b8;
+    }
+
+    .customer-accordion-header {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--slate-200);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cust-badge-pill {
+      background-color: var(--slate-100);
+      color: var(--slate-800);
+      border: 1.5px solid var(--slate-300);
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+
+    .cust-status-pill {
+      background-color: #fef2f2;
+      color: #991b1b;
+      border: 1.5px solid #fecaca;
+      padding: 3px 12px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-container {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 95%;
+      max-width: 1160px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.3);
+      border: 1.5px solid var(--slate-300);
+      overflow: hidden;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      background-color: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-bottom: none;
+      padding: 6px 10px;
+      border-radius: 8px 8px 0 0;
+    }
+    .editor-btn {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #334155;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.12s ease;
+    }
+    .editor-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .editor-canvas {
+      min-height: 95px;
+      max-height: 160px;
+      overflow-y: auto;
+      padding: 12px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 0 0 8px 8px;
+      font-size: 14px;
+      color: #0f172a;
+      outline: none;
+      line-height: 1.65;
+    }
+    .editor-canvas:focus {
+      border-color: #2563eb;
+    }
+
+    #custom-toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 400;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 11px 20px;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      opacity: 0;
+      transform: translateY(-12px);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      border-left: 5px solid #f59e0b;
+    }
+    #custom-toast.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 flex h-full w-full overflow-hidden">
+
+  <!-- Left Sidebar Navigation -->
+  <aside id="sidebar" class="w-72 h-full bg-slate-900 text-slate-200 flex flex-col shrink-0 z-30 shadow-2xl sidebar-scroll transition-all duration-200">
+    <div class="h-16 px-3.5 bg-slate-950 flex items-center justify-between border-b border-slate-800 sticky top-0 z-40 shrink-0 sidebar-header">
+      <div class="flex items-center gap-2.5 overflow-hidden shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-base shrink-0 shadow-md">
+          🌐
+        </div>
+        <span class="font-extrabold text-white text-base tracking-wide sidebar-text truncate">出口系統管理</span>
+      </div>
+      <button type="button" onclick="toggleSidebar()" class="text-slate-300 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors shrink-0" title="收合或展開選單">
+        <i id="sidebar-toggle-icon" class="fa-solid fa-chevron-left text-sm"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 py-4 space-y-6">
+      <div>
+        <div class="px-5 mb-2.5 text-xs font-black uppercase tracking-wider text-slate-400 sidebar-group-label">
+          表單作業選單
+        </div>
+        <div class="space-y-1.5">
+          <div class="px-3.5">
+            <button onclick="toggleSubmenu('ar-submenu')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold text-white bg-slate-800/90 hover:bg-slate-800 transition-all border border-slate-700/60 shadow-xs">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-folder-closed text-blue-400 text-sm"></i>
+                <span class="sidebar-text">AR 帳款追蹤回報</span>
+              </div>
+              <i id="ar-submenu-arrow" class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+            </button>
+          </div>
+
+          <div id="ar-submenu" class="pl-9 pr-3.5 space-y-1.5 sidebar-submenu">
+            <a href="javascript:void(0)" id="nav-btn-report" onclick="switchNavSection('report')" class="flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold text-white bg-blue-600 shadow-md">
+              <i class="fa-solid fa-file-lines text-sm"></i>
+              <span>處理進度回報</span>
+            </a>
+            <a href="javascript:void(0)" id="nav-btn-email" onclick="switchNavSection('email')" class="flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors">
+              <i class="fa-solid fa-envelope text-sm"></i>
+              <span>Email通知歷程</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-3.5 bg-slate-950/90 border-t border-slate-800 flex items-center gap-3 sticky bottom-0 z-40 shrink-0">
+      <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-md" id="sidebar-user-avatar">
+        王
+      </div>
+      <div class="sidebar-text truncate">
+        <div class="text-xs md:text-sm font-bold text-white truncate" id="sidebar-user-title">業務 王大明</div>
+        <div class="text-[11px] text-slate-400 font-semibold truncate" id="sidebar-user-desc">固聚酯粒 (E10245)</div>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main-content" class="flex-1 h-full min-w-0 main-scroll p-3.5 md:p-5 space-y-4">
+
+    <!-- Top Unified Bar -->
+    <div class="bg-white rounded-2xl p-3.5 px-4 border-2 border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 sticky top-0 z-20">
+      
+      <!-- 左側：身分資訊徽章群 -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs md:text-sm text-slate-800 font-bold shadow-2xs">
+          <i class="fa-solid fa-building text-blue-600 text-sm"></i>
+          <span>公司：<strong class="text-slate-950">遠東新世紀 (FENC)</strong></span>
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs md:text-sm text-slate-800 font-bold shadow-2xs">
+          <i class="fa-solid fa-user-check text-blue-600 text-sm"></i>
+          <span>登入人員：<strong class="text-slate-950" id="current-user-display">王大明 (E10245)</strong></span>
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-200 text-xs md:text-sm text-blue-900 font-black shadow-2xs">
+          <i class="fa-solid fa-sitemap text-blue-600 text-sm"></i>
+          <span>單位/職稱：<span id="current-unit-display">固聚酯粒 / 業務</span></span>
+        </div>
+      </div>
+
+      <!-- 右側：控制元件群組 (統一 42px 高度) -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        
+        <!-- 1. 字體動態縮放組件 (預設 93% + 記住設定 Checkbox) -->
+        <div class="inline-flex items-center h-[42px] bg-slate-50 px-2.5 rounded-xl border-2 border-slate-200 shadow-xs gap-2">
+          <span class="text-xs md:text-sm font-black text-slate-700 pl-0.5 flex items-center gap-1.5 whitespace-nowrap">
+            <i class="fa-solid fa-text-height text-blue-600"></i> 字體：
+          </span>
+          <div class="inline-flex items-center gap-1">
+            <button type="button" onclick="adjustFontSize(-1)" class="w-7 h-7 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-200 hover:border-slate-400 font-black flex items-center justify-center transition-all shadow-xs active:scale-95" title="縮小字體 (每次 -1px)">
+              <i class="fa-solid fa-minus text-xs"></i>
+            </button>
+            <button type="button" onclick="resetFontSize()" id="font-scale-display" class="px-2 h-7 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 font-mono font-black text-xs md:text-sm flex items-center justify-center transition-all shadow-xs" title="點擊直接還原 93% 預設大小">
+              93%
+            </button>
+            <button type="button" onclick="adjustFontSize(1)" class="w-7 h-7 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-200 hover:border-slate-400 font-black flex items-center justify-center transition-all shadow-xs active:scale-95" title="放大字體 (每次 +1px)">
+              <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+          </div>
+          <label class="inline-flex items-center gap-1.5 cursor-pointer pl-1.5 text-xs font-bold text-slate-700 border-l border-slate-300" title="記住設定，該登入人員下次進入系統時自動讀取">
+            <input type="checkbox" id="remember-font-size-cb" onchange="toggleRememberFontSize(this.checked)" class="h-4 w-4 rounded border-slate-400 text-blue-600 focus:ring-blue-500 cursor-pointer" checked>
+            <span class="whitespace-nowrap text-[11px] md:text-xs font-black">記住設定</span>
+          </label>
+        </div>
+
+        <!-- 2. 模擬視角切換下拉選單 -->
+        <div class="relative inline-flex items-center">
+          <select id="user-role-simulator" onchange="changeSimulatedUser(this.value)" class="h-[42px] pl-3.5 pr-8 bg-blue-50 hover:bg-blue-100/70 border-2 border-blue-300 rounded-xl text-xs md:text-sm font-black text-blue-950 shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer">
+            <option value="sales_wang">👤 業務 王大明 (固聚酯粒, 只能看經手)</option>
+            <option value="sales_lee">👤 業務 李小健 (成衣, 只能看經手)</option>
+            <option value="admin_intl">👑 台北國際事務處 經理 (可看所有資料)</option>
+          </select>
+        </div>
+
+        <!-- 3. 基準日日曆選單元件 (預設 Today，點擊跳出日曆，非今日自動警示) -->
+        <div class="inline-flex items-center h-[42px] bg-blue-50 px-3 rounded-xl border-2 border-blue-300 shadow-xs gap-2">
+          <span class="text-xs md:text-sm font-black text-blue-950 flex items-center gap-1.5 whitespace-nowrap">
+            🗓️ 基準日：
+          </span>
+          <input type="date" id="base-date-picker" onchange="handleBaseDateChange(this.value)" onclick="try{this.showPicker()}catch(e){}" class="h-[30px] px-2 bg-white border border-blue-300 rounded-lg text-xs md:text-sm font-mono font-black text-slate-900 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer" title="點擊開啟日曆選單選擇日期">
+        </div>
+
+      </div>
+    </div>
+
+    <div id="section-report" class="space-y-4">
+      <div class="bg-white rounded-2xl p-5 border-2 border-slate-200 shadow-sm space-y-4">
+        
+        <!-- Top Action Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b-2 border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-2.5 h-6 bg-blue-600 rounded-full"></div>
+            <h1 class="text-lg md:text-xl font-black text-slate-950 tracking-tight">📋 AR 處理進度回報</h1>
+          </div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <button class="btn-func" onclick="refreshArData()"><i class="fa-solid fa-rotate text-slate-600 text-sm"></i> 更新最新 AR 明細</button>
+            <button type="button" class="btn-batch" onclick="openBatchModal()"><i class="fa-solid fa-bolt text-sm"></i> 批次說明作業</button>
+            <button class="btn-func" onclick="openPromptModal()"><i class="fa-solid fa-sliders text-slate-600 text-sm"></i> AI摘要提示詞</button>
+            <select id="role-selector" onchange="switchUserRole(this.value)" class="h-[38px] px-3 bg-slate-50 border-2 border-slate-300 rounded-lg font-black text-xs md:text-sm text-slate-800 shadow-xs cursor-pointer focus:outline-none focus:border-blue-500">
+              <option value="admin">🔑 身份：管理人員 (顯示AI摘要與管理區塊)</option>
+              <option value="sales">👤 身份：業務人員 (隱藏AI摘要與管理區塊)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filter & Tab Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border-2 border-slate-200">
+          <div class="inline-flex bg-slate-200/90 p-1 rounded-xl text-xs md:text-sm font-black text-slate-800 gap-1">
+            <button type="button" id="tab-btn-16_plus" class="tab-filter-btn px-3.5 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm border border-slate-300" onclick="switchTab('16_plus', this)">🚨 逾期 ≧ 16 天</button>
+            <button type="button" id="tab-btn-1_to_15" class="tab-filter-btn px-3.5 py-1.5 rounded-lg text-slate-700 hover:text-slate-950" onclick="switchTab('1_to_15', this)">⚠️ 1 ≦ 逾期 ≦ 15 天</button>
+            <button type="button" id="tab-btn-neg15_to_0" class="tab-filter-btn px-3.5 py-1.5 rounded-lg text-slate-700 hover:text-slate-950" onclick="switchTab('neg15_to_0', this)">🟢 -15 ≦ 逾期 ≦ 0 天</button>
+          </div>
+
+          <div class="flex items-center gap-2.5 relative">
+            <div id="filter-collapsed-pill" class="relative group">
+              <button type="button" onclick="toggleFilterSection()" class="btn-func btn-compact bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100 flex items-center gap-1.5">
+                <i class="fa-solid fa-filter text-xs"></i> <span>資料篩選 (已收合)</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>
+              </button>
+              <div class="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-2xl whitespace-nowrap space-y-1">
+                <div class="font-black border-b border-slate-700 pb-1 text-blue-400">📌 目前資料篩選狀態</div>
+                <div id="hover-summary-text">出口商：FENC | 賣方：全 (3) | 事業群：全 (3) | 買方：全 (4)</div>
+              </div>
+            </div>
+
+            <!-- Expanded Filters Panel -->
+            <div id="filter-expanded-panel" class="hidden flex flex-wrap items-center gap-2 bg-white p-2 rounded-xl border-2 border-slate-300 shadow-lg">
+              <span class="font-black text-xs text-slate-700 ml-1">篩選：</span>
+              
+              <div class="multiselect-container">
+                <button type="button" class="multiselect-btn" onclick="toggleDropdown('exporter-panel')">
+                  <span>出口商：<strong id="exporter-label" class="text-slate-950">全 (2)</strong></span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel" id="exporter-panel">
+                  <div class="dropdown-actions-bar">
+                    <span class="text-slate-700 font-bold">選擇出口商</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAllOptions('exporter-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 font-bold cursor-pointer" onclick="toggleAllOptions('exporter-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exporter-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FENC" checked><span>FENC (遠東新世紀)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exporter-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FEAV" checked><span>FEAV (遠東服裝)</span></label>
+                </div>
+              </div>
+
+              <div class="multiselect-container">
+                <button type="button" class="multiselect-btn" onclick="toggleDropdown('seller-panel')">
+                  <span>賣方：<strong id="seller-label" class="text-slate-950">全 (3)</strong></span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel" id="seller-panel">
+                  <div class="dropdown-actions-bar">
+                    <span class="text-slate-700 font-bold">選擇賣方</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAllOptions('seller-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 font-bold cursor-pointer" onclick="toggleAllOptions('seller-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="seller-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FENC" checked><span>FENC</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="seller-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FNIS" checked><span>FNIS</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="seller-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="OIHN" checked><span>OIHN</span></label>
+                </div>
+              </div>
+
+              <div class="multiselect-container">
+                <button type="button" class="multiselect-btn" onclick="toggleDropdown('bg-panel')">
+                  <span>事業群：<strong id="bg-label" class="text-slate-950">全 (3)</strong></span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel" id="bg-panel">
+                  <div class="dropdown-actions-bar">
+                    <span class="text-slate-700 font-bold">選擇事業群</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAllOptions('bg-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 font-bold cursor-pointer" onclick="toggleAllOptions('bg-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="bg-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="solid_pet" data-label="固聚酯粒" checked><span>固聚酯粒</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="bg-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="staple_fiber" data-label="短纖" checked><span>短纖</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="bg-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="apparel" data-label="成衣" checked><span>成衣</span></label>
+                </div>
+              </div>
+
+              <div class="multiselect-container">
+                <button type="button" class="multiselect-btn" onclick="toggleDropdown('buyer-panel')">
+                  <span>買方：<strong id="buyer-label" class="text-slate-950">全 (4)</strong></span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel" id="buyer-panel" style="min-width: 280px;">
+                  <div class="dropdown-actions-bar">
+                    <span class="text-slate-700 font-bold">選擇買方客戶</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 font-bold cursor-pointer" onclick="toggleAllOptions('buyer-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 font-bold cursor-pointer" onclick="toggleAllOptions('buyer-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="buyer-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="F09881" checked><span>TECH-PLAST(KR)_F09881</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="buyer-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="F01121" checked><span>VINAY PLASTICS(IN)_F01121</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="buyer-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="F03342" checked><span>FORMOSA TEXTILES(VN)_F03342</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="buyer-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="F05520" checked><span>GLOBAL YARN(TH)_F05520</span></label>
+                </div>
+              </div>
+
+              <button type="button" onclick="toggleFilterSection()" class="text-slate-500 hover:text-slate-900 px-1 text-sm font-black" title="收合"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <button class="btn-func btn-compact" onclick="expandAllCards()"><i class="fa-solid fa-angles-down text-slate-500 text-xs"></i> 全部展開</button>
+            <button class="btn-func btn-compact" onclick="collapseAllCards()"><i class="fa-solid fa-angles-up text-slate-500 text-xs"></i> 全部折疊</button>
+          </div>
+        </div>
+
+        <!-- Customer Invoices Accordion Container (預設全部折疊) -->
+        <div id="cards-container" class="space-y-3.5"></div>
+
+        <div id="admin-summary-section" class="bg-white rounded-2xl p-5 border-2 border-blue-200 shadow-md text-slate-900 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b-2 border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xl">🤖</span>
+              <h2 class="font-black text-base md:text-lg text-slate-950">管理單位處理進度說明 <span class="text-xs font-bold text-slate-500">(管理人員專用區塊)</span></h2>
+            </div>
+
+            <!-- 轉出說明檔案按鈕 (支援下拉選單與 Filter 彈窗) -->
+            <div class="relative inline-block text-left" id="export-dropdown-container">
+              <button type="button" onclick="toggleExportMenu(event)" class="btn-batch px-4 py-2 text-xs md:text-sm font-black flex items-center gap-2 shadow-md">
+                <i class="fa-solid fa-file-export text-yellow-300"></i>
+                <span>轉出說明檔案</span>
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </button>
+
+              <div id="export-dropdown-menu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-2xl border-2 border-slate-200 py-1.5 z-50">
+                <div class="px-3 py-1.5 text-[11px] font-black text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                  選擇轉出檔案格式
+                </div>
+                <a href="javascript:void(0)" onclick="openExportModal('xlsx')" class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs md:text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-800 transition-colors">
+                  <i class="fa-solid fa-file-excel text-emerald-600 text-base"></i>
+                  <span>轉出 Excel (.xlsx)</span>
+                </a>
+                <a href="javascript:void(0)" onclick="openExportModal('pdf')" class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs md:text-sm font-bold text-slate-800 hover:bg-rose-50 hover:text-rose-800 transition-colors border-t border-slate-100">
+                  <i class="fa-solid fa-file-pdf text-rose-600 text-base"></i>
+                  <span>轉出 PDF (.pdf)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table (已加寬 11% 並移除重複的「轉入正式」欄位) -->
+          <div class="overflow-x-auto">
+            <table class="custom-table" style="table-layout: auto;">
+              <thead>
+                <tr class="bg-slate-100 text-slate-900 text-xs md:text-sm">
+                  <th style="width: 55px;">NO</th>
+                  <th style="width: 270px;" class="text-left font-black">發票交易明細</th>
+                  <!-- 欄寬加大 11% -->
+                  <th style="width: 48%;" class="text-left font-black text-blue-950">處理進度說明</th>
+                  <th style="width: 170px;" class="text-center font-black">轉入正式日期/時間</th>
+                  <th style="width: 110px;" class="text-center font-black">附件檔案</th>
+                  <th style="width: 65px;" class="text-center font-black">操作</th>
+                </tr>
+              </thead>
+              <tbody id="management-progress-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- 表格分頁與筆數控制列 -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t-2 border-slate-100 text-xs md:text-sm font-bold text-slate-700">
+            <div class="flex items-center gap-2">
+              <span>每頁顯示筆數：</span>
+              <select id="mgmt-page-size" onchange="changeMgmtPageSize(this.value)" class="h-8 px-2 bg-slate-50 border-2 border-slate-300 rounded-lg font-black text-slate-900 focus:outline-none focus:border-blue-500">
+                <option value="10">10 筆</option>
+                <option value="20">20 筆</option>
+                <option value="50">50 筆</option>
+                <option value="250">250 筆</option>
+                <option value="all">全部</option>
+              </select>
+              <span class="text-slate-400">|</span>
+              <span>總共 <strong id="mgmt-total-count" class="text-blue-700 font-black">0</strong> 筆資料</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="button" id="mgmt-prev-btn" onclick="goToMgmtPage(mgmtCurrentPage - 1)" class="btn-func btn-compact h-8 px-2.5 disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-chevron-left text-xs"></i> 上一頁
+              </button>
+              <span class="font-mono text-xs md:text-sm font-black text-slate-900">
+                第 <span id="mgmt-current-page" class="text-blue-700">1</span> / <span id="mgmt-total-pages">1</span> 頁
+              </span>
+              <button type="button" id="mgmt-next-btn" onclick="goToMgmtPage(mgmtCurrentPage + 1)" class="btn-func btn-compact h-8 px-2.5 disabled:opacity-40 disabled:cursor-not-allowed">
+                下一頁 <i class="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="section-email" class="hidden space-y-4">
+      
+      <!-- 疑似異常通知區塊 -->
+      <div id="abnormal-notice-card" class="bg-rose-50 rounded-2xl p-5 border-2 border-rose-300 shadow-sm space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b-2 border-rose-200 flex-wrap gap-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-2.5 h-6 bg-rose-600 rounded-full"></div>
+            <h2 class="font-black text-base md:text-lg text-rose-950 flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> ⚠️ 疑似異常通知區塊 <span class="text-xs font-bold text-rose-800">(每週排程寄送日後 2 天內未成功寄出之案件清冊)</span>
+            </h2>
+          </div>
+          <span class="text-xs bg-rose-200 text-rose-950 font-black px-3 py-1 rounded-full border border-rose-300">
+            請權責押匯/業務同仁儘速確認與補發
+          </span>
+        </div>
+
+        <div class="table-scroll border-2 border-rose-200 rounded-xl bg-white shadow-xs max-h-[220px]">
+          <table class="custom-table" style="border: none;">
+            <thead>
+              <tr class="bg-rose-100 text-rose-950 text-xs">
+                <th style="width: 50px;">NO</th>
+                <th style="width: 90px;">賣方</th>
+                <th style="width: 90px;">出口商</th>
+                <th style="width: 100px;">事業群</th>
+                <th style="width: 270px;" class="text-left font-black text-rose-900">未成功寄出之目的地區別</th>
+                <th style="width: 100px;">國外倉類別</th>
+                <th style="width: 130px;" class="text-left font-black text-rose-900">押匯人員</th>
+                <th class="text-left font-black text-rose-900">異常原因說明</th>
+                <th style="width: 95px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="abnormal-notice-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 每週應收帳款 Email 通知歷程主區塊 -->
+      <div class="bg-white rounded-2xl p-5 border-2 border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b-2 border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-2.5 h-6 bg-blue-600 rounded-full"></div>
+            <div>
+              <h1 class="text-lg md:text-xl font-black text-slate-950 tracking-tight">📧 每週應收帳款 Email 通知歷程</h1>
+              <p class="text-xs text-slate-600 font-semibold">每週四系統自動寄送 (賣方＝FENC、OIHN且出口商＝FENC；或賣方＝FNIS且出口商＝FENC) 之應收帳款通知報表</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <button type="button" class="btn-func text-blue-800 border-blue-300 hover:bg-blue-50" onclick="openTemplateEditorModal()">
+              <i class="fa-solid fa-file-pen text-sm"></i> ✏️ Email通知內文編輯
+            </button>
+            <button class="btn-func" onclick="refreshEmailLogs()">
+              <i class="fa-solid fa-rotate text-slate-600 text-sm"></i> 重新整理
+            </button>
+            <button type="button" class="btn-batch" onclick="openSendConfirmModal()">
+              <i class="fa-solid fa-paper-plane text-sm"></i> 🚀 手動觸發 Email 寄出
+            </button>
+          </div>
+        </div>
+
+        <div id="email-group-cards-container" class="space-y-4"></div>
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- MODAL: 管理單位進度說明 - 資料轉出篩選與預覽視窗 (多選 Filter + 獨立分欄) -->
+  <div class="modal-backdrop" id="export-filter-modal" style="z-index: 280;">
+    <div class="modal-container shadow-2xl" style="max-width: 1200px; width: 97%;">
+      <div class="bg-slate-900 text-white p-4 px-6 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-blue-400 text-lg">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-base md:text-lg text-white tracking-wide">管理單位處理進度說明 - 資料轉出篩選與預覽</h3>
+            <p class="text-xs text-slate-300 font-normal">系統將依條件轉出本區所有符合之資料；所有發票明細欄位均採獨立分欄列出</p>
+          </div>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-white p-1 rounded-md transition-colors" onclick="closeExportModal()">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 max-h-[80vh] overflow-y-auto bg-slate-50/60 text-xs md:text-sm">
+        
+        <!-- 1. 轉出資料 Filter 篩選條件 (多選勾選) -->
+        <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+            <span class="font-black text-slate-900 text-sm md:text-base flex items-center gap-2">
+              <i class="fa-solid fa-filter text-blue-600"></i> 1. 轉出資料 Filter 篩選條件 (支援多選勾選)：
+            </span>
+            <div class="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-300 text-xs font-black">
+              <button type="button" id="exp-fmt-btn-xlsx" onclick="setExportFormat('xlsx')" class="px-3 py-1 rounded-lg bg-blue-600 text-white shadow-xs">📊 Excel (.xlsx)</button>
+              <button type="button" id="exp-fmt-btn-pdf" onclick="setExportFormat('pdf')" class="px-3 py-1 rounded-lg text-slate-700 hover:text-slate-950">📄 PDF (.pdf)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+            <!-- (1) 賣方 -->
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5 text-xs md:text-sm">賣方：</label>
+              <div class="multiselect-container w-full">
+                <button type="button" class="multiselect-btn w-full justify-between h-[38px] bg-white text-xs md:text-sm font-bold" onclick="toggleDropdown('exp-seller-panel')">
+                  <span class="truncate" id="exp-seller-label">全 (3)</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel w-full" id="exp-seller-panel">
+                  <div class="dropdown-actions-bar">
+                    <span>選擇賣方</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 cursor-pointer" onclick="toggleAllExpOptions('exp-seller-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 cursor-pointer" onclick="toggleAllExpOptions('exp-seller-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-seller-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FENC" checked onchange="updateExpFilterLabels()"><span>FENC</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-seller-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FNIS" checked onchange="updateExpFilterLabels()"><span>FNIS</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-seller-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="OIHN" checked onchange="updateExpFilterLabels()"><span>OIHN</span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- (2) 出口商 -->
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5 text-xs md:text-sm">出口商：</label>
+              <div class="multiselect-container w-full">
+                <button type="button" class="multiselect-btn w-full justify-between h-[38px] bg-white text-xs md:text-sm font-bold" onclick="toggleDropdown('exp-exporter-panel')">
+                  <span class="truncate" id="exp-exporter-label">全 (2)</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel w-full" id="exp-exporter-panel">
+                  <div class="dropdown-actions-bar">
+                    <span>選擇出口商</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 cursor-pointer" onclick="toggleAllExpOptions('exp-exporter-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 cursor-pointer" onclick="toggleAllExpOptions('exp-exporter-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-exporter-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FENC" checked onchange="updateExpFilterLabels()"><span>FENC (遠東新世紀)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-exporter-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="FEAV" checked onchange="updateExpFilterLabels()"><span>FEAV (遠東服裝)</span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- (3) 事業群 -->
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5 text-xs md:text-sm">事業群：</label>
+              <div class="multiselect-container w-full">
+                <button type="button" class="multiselect-btn w-full justify-between h-[38px] bg-white text-xs md:text-sm font-bold" onclick="toggleDropdown('exp-bg-panel')">
+                  <span class="truncate" id="exp-bg-label">全 (3)</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel w-full" id="exp-bg-panel">
+                  <div class="dropdown-actions-bar">
+                    <span>選擇事業群</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 cursor-pointer" onclick="toggleAllExpOptions('exp-bg-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 cursor-pointer" onclick="toggleAllExpOptions('exp-bg-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-bg-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="solid_pet" data-name="固聚酯粒" checked onchange="updateExpFilterLabels()"><span>固聚酯粒</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-bg-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="staple_fiber" data-name="短纖" checked onchange="updateExpFilterLabels()"><span>短纖</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-bg-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="apparel" data-name="成衣" checked onchange="updateExpFilterLabels()"><span>成衣</span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- (4) 國外倉類別 -->
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5 text-xs md:text-sm">國外倉類別：</label>
+              <div class="multiselect-container w-full">
+                <button type="button" class="multiselect-btn w-full justify-between h-[38px] bg-white text-xs md:text-sm font-bold" onclick="toggleDropdown('exp-warehouse-panel')">
+                  <span class="truncate" id="exp-warehouse-label">全 (2)</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel w-full" id="exp-warehouse-panel">
+                  <div class="dropdown-actions-bar">
+                    <span>選擇國外倉類別</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 cursor-pointer" onclick="toggleAllExpOptions('exp-warehouse-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 cursor-pointer" onclick="toggleAllExpOptions('exp-warehouse-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-warehouse-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="非國外倉" checked onchange="updateExpFilterLabels()"><span>非國外倉</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-warehouse-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="歐洲倉" checked onchange="updateExpFilterLabels()"><span>歐洲倉</span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- (5) 人員分群 -->
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5 text-xs md:text-sm">人員 (事業群/管理單位)：</label>
+              <div class="multiselect-container w-full">
+                <button type="button" class="multiselect-btn w-full justify-between h-[38px] bg-blue-50/70 border-blue-300 text-xs md:text-sm font-bold text-blue-950" onclick="toggleDropdown('exp-personnel-panel')">
+                  <span class="truncate" id="exp-personnel-label">全 (5)</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                </button>
+                <div class="multiselect-panel w-full" id="exp-personnel-panel" style="min-width: 290px;">
+                  <div class="dropdown-actions-bar">
+                    <span>選擇相關人員</span>
+                    <div class="space-x-2">
+                      <span class="text-blue-600 cursor-pointer" onclick="toggleAllExpOptions('exp-personnel-cb', true)">全選</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="text-slate-600 cursor-pointer" onclick="toggleAllExpOptions('exp-personnel-cb', false)">清空</span>
+                    </div>
+                  </div>
+                  <div class="px-3 py-1 bg-slate-100 text-[11px] font-black text-slate-600 border-b border-slate-200">
+                    🏢 事業群人員 (業務同仁)
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="E10245" data-name="王大明" checked onchange="updateExpFilterLabels()"><span>固聚酯粒 - 王大明 (E10245)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="E10288" data-name="張美麗" checked onchange="updateExpFilterLabels()"><span>短纖 - 張美麗 (E10288)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="E10299" data-name="李小健" checked onchange="updateExpFilterLabels()"><span>成衣 - 李小健 (E10299)</span></label>
+                  <div class="px-3 py-1 bg-slate-100 text-[11px] font-black text-slate-600 border-t border-b border-slate-200">
+                    👑 管理單位人員 (台北國際事務處)
+                  </div>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="E10001" data-name="林資深" checked onchange="updateExpFilterLabels()"><span>台北國際事務處 - 林資深 (E10001)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="N10042" data-name="陳美娟" checked onchange="updateExpFilterLabels()"><span>台北國際事務處 - 陳美娟 (N10042)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="NEG_CHANG" data-name="張智成" checked onchange="updateExpFilterLabels()"><span>台北國際事務處 - 張智成 (押匯)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="NEG_LIU" data-name="劉曉明" checked onchange="updateExpFilterLabels()"><span>台北國際事務處 - 劉曉明 (押匯)</span></label>
+                  <label class="multiselect-option"><input type="checkbox" class="exp-personnel-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="NEG_LIN" data-name="林可為" checked onchange="updateExpFilterLabels()"><span>台北國際事務處 - 林可為 (押匯)</span></label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. 日期區間篩選條件確認 (迄日預設系統當月底日期 + 日曆選單) -->
+        <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+            <span class="font-black text-slate-900 text-sm md:text-base flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-blue-600"></i> 2. 日期區間篩選條件確認：
+            </span>
+            <span class="text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
+              💡 迄日欄位預設系統當月底日期，點擊可開啟日曆選單修改
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5">(6) 出口報關日 (起日)：</label>
+              <input type="date" id="export-filter-start" value="1900-01-01" class="w-full p-2.5 border-2 border-slate-300 rounded-xl font-mono text-sm font-bold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs cursor-pointer" onclick="try{this.showPicker()}catch(e){}">
+            </div>
+            <div>
+              <label class="font-black text-blue-950 block mb-1.5">(7) 出口報關日 (迄日)：</label>
+              <input type="date" id="export-filter-end" class="w-full p-2.5 border-2 border-blue-400 rounded-xl font-mono text-sm font-black text-blue-950 bg-blue-50/70 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs cursor-pointer auto-end-of-month-input" onclick="try{this.showPicker()}catch(e){}">
+            </div>
+            <div>
+              <label class="font-black text-blue-950 block mb-1.5 flex items-center justify-between">
+                <span>(8) 銀行入帳日 (迄日)：</span>
+                <span class="text-xs text-blue-700 font-black">為空值者</span>
+              </label>
+              <input type="date" id="export-filter-bank-end" class="w-full p-2.5 border-2 border-blue-400 rounded-xl font-mono text-sm font-black text-blue-950 bg-blue-50/70 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs cursor-pointer auto-end-of-month-input" onclick="try{this.showPicker()}catch(e){}">
+            </div>
+            <div>
+              <label class="font-black text-blue-950 block mb-1.5">(9) 託收日 (迄日)：</label>
+              <input type="date" id="export-filter-coll-end" class="w-full p-2.5 border-2 border-blue-400 rounded-xl font-mono text-sm font-black text-blue-950 bg-blue-50/70 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs cursor-pointer auto-end-of-month-input" onclick="try{this.showPicker()}catch(e){}">
+            </div>
+            <div>
+              <label class="font-bold text-slate-800 block mb-1.5">(10) 帳款到期日 (起日)：</label>
+              <input type="date" id="export-filter-due-start" value="1900-01-01" class="w-full p-2.5 border-2 border-slate-300 rounded-xl font-mono text-sm font-bold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs cursor-pointer" onclick="try{this.showPicker()}catch(e){}">
+            </div>
+            <div>
+              <label class="font-black text-blue-950 block mb-1.5">(11) 帳款到期日 (迄日)：</label>
+              <input type="date" id="export-filter-due-end" class="w-full p-2.5 border-2 border-blue-400 rounded-xl font-mono text-sm font-black text-blue-950 bg-blue-50/70 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs cursor-pointer auto-end-of-month-input" onclick="try{this.showPicker()}catch(e){}">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 資料預覽清單 (不合併欄位，全欄位獨立) -->
+        <div class="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+            <span class="font-black text-slate-900 text-sm md:text-base flex items-center gap-2">
+              <i class="fa-solid fa-table-list text-blue-600"></i> 3. 轉出資料預覽 (本區符合筆數：<strong id="export-preview-count" class="text-blue-700">0</strong> 筆)：
+            </span>
+            <span class="text-xs font-semibold text-slate-500">
+              📌 欄位包含：發票號碼、項次、客戶名稱、事業群、收款金額、幣別、逾期天數、責任業務、押匯人員、處理進度說明、轉入正式時間
+            </span>
+          </div>
+
+          <div class="table-scroll border-2 border-slate-200 rounded-xl bg-white shadow-xs max-h-[220px]">
+            <table class="custom-table" style="border: none; table-layout: auto;">
+              <thead>
+                <tr class="bg-slate-100 text-slate-950 text-xs font-black">
+                  <th style="width: 45px;">NO</th>
+                  <th style="width: 120px;" class="text-left font-black">發票號碼</th>
+                  <th style="width: 50px;">項次</th>
+                  <th class="text-left font-black">客戶名稱</th>
+                  <th style="width: 90px;">事業群</th>
+                  <th style="width: 105px;" class="text-right font-black">收款金額</th>
+                  <th style="width: 60px;">幣別</th>
+                  <th style="width: 80px;">逾期天數</th>
+                  <th style="width: 110px;" class="text-left font-black">責任業務</th>
+                  <th style="width: 110px;" class="text-left font-black">押匯人員</th>
+                  <th class="text-left font-black" style="min-width: 260px;">處理進度說明</th>
+                  <th style="width: 155px;">轉入正式時間</th>
+                  <th style="width: 80px;">轉出狀態</th>
+                </tr>
+              </thead>
+              <tbody id="export-preview-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-4 px-6 bg-slate-50 border-t-2 border-slate-200 flex justify-between items-center">
+        <button type="button" class="btn-func text-xs md:text-sm h-[40px] px-5" onclick="closeExportModal()">關閉視窗</button>
+        <button type="button" class="btn-batch text-xs md:text-sm h-[40px] px-6" onclick="executeExportDownload()">
+          <i class="fa-solid fa-cloud-arrow-down text-sm"></i> 確認轉出本區所有資料
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 操作對話框 (3 個 Radio Button：可轉出、不轉出、刪除) -->
+  <div class="modal-backdrop" id="mgmt-action-modal" style="z-index: 270;">
+    <div class="modal-container shadow-2xl" style="max-width: 540px;">
+      <div class="bg-slate-900 text-white p-4 px-5 flex items-center justify-between border-b border-slate-800">
+        <h3 class="font-black text-sm md:text-base flex items-center gap-2">
+          <i class="fa-solid fa-gear text-blue-400"></i> 管理說明記錄操作設定
+        </h3>
+        <button type="button" class="text-slate-400 hover:text-white text-lg" onclick="closeMgmtActionModal()">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 bg-slate-50/60 text-xs md:text-sm">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+          <div class="text-slate-500 font-bold">目標發票項目：</div>
+          <div id="mgmt-action-target-desc" class="font-black text-slate-900 leading-relaxed font-mono"></div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border-2 border-slate-200 shadow-xs space-y-3">
+          <label class="font-black text-slate-900 block border-b border-slate-100 pb-2">請選擇此筆記錄的狀態設定：</label>
+          
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-slate-200 hover:bg-blue-50/50 cursor-pointer transition-colors">
+            <input type="radio" name="mgmt_status_opt" value="exportable" class="mt-0.5 h-4 w-4 text-blue-600 border-slate-300">
+            <div>
+              <div class="font-black text-blue-900">🟢 (1) 可轉出 (預設)</div>
+              <div class="text-slate-600 text-xs font-semibold">代表此筆進度說明可轉出至其他正式管理報告內容</div>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 cursor-pointer transition-colors">
+            <input type="radio" name="mgmt_status_opt" value="non_exportable" class="mt-0.5 h-4 w-4 text-slate-600 border-slate-300">
+            <div>
+              <div class="font-black text-slate-800">⚪ (2) 不轉出</div>
+              <div class="text-slate-600 text-xs font-semibold">暫不納入轉出檔案清單，但保留於系統檢視</div>
+            </div>
+          </label>
+
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-rose-200 hover:bg-rose-50/60 cursor-pointer transition-colors">
+            <input type="radio" name="mgmt_status_opt" value="deleted" class="mt-0.5 h-4 w-4 text-rose-600 border-slate-300">
+            <div>
+              <div class="font-black text-rose-900">🔴 (3) 刪除</div>
+              <div class="text-rose-700 text-xs font-semibold">自管理報告移除，並於 AI 提煉摘要註記「刪除日期/時間」及操作人員工號姓名</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="p-4 px-5 bg-slate-50 border-t border-slate-200 flex justify-end gap-2.5">
+        <button type="button" class="btn-func" onclick="closeMgmtActionModal()">取消</button>
+        <button type="button" class="btn-batch" onclick="saveMgmtActionStatus()">
+          <i class="fa-solid fa-check text-xs"></i> 確定儲存設定
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 發票處理歷程說明紀錄對話框 (含來源刪除註記圖示與彈窗) -->
+  <div class="modal-backdrop" id="history-editor-modal">
+    <div class="modal-container shadow-2xl">
+      <div class="bg-slate-900 text-white p-4 px-5 flex items-center justify-between border-b border-slate-800">
+        <h3 class="font-black text-sm md:text-base flex items-center gap-2">
+          <i class="fa-solid fa-file-lines text-blue-400"></i> 出口發票 [<span id="modal-inv-id-title" class="text-blue-300"></span>] 處理歷程說明紀錄
+        </h3>
+        <div class="flex items-center gap-2">
+          <button type="button" class="btn-batch btn-compact" onclick="saveInvoiceHistory()"><i class="fa-solid fa-cloud-arrow-up text-xs"></i> 轉入正式</button>
+          <button type="button" class="btn-func btn-compact text-slate-800 bg-white" onclick="closeHistoryModal()"><i class="fa-solid fa-xmark text-xs"></i> 關閉</button>
+        </div>
+      </div>
+
+      <div class="p-5 space-y-4 max-h-[78vh] overflow-y-auto bg-slate-50/60 text-xs md:text-sm">
+        <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-xs">
+          <table class="custom-table" style="border: none;">
+            <thead>
+              <tr class="bg-slate-100 text-slate-900 text-xs font-black">
+                <th style="width: 45px;">NO</th>
+                <th style="width: 80px;">逾期天數</th>
+                <th style="width: 80px;">凍結出口</th>
+                <th style="width: 120px;">凍結/解凍生效日</th>
+                <th style="width: 130px;">發票號碼</th>
+                <th style="width: 55px;">項次</th>
+                <th style="width: 90px;">收款方式</th>
+                <th style="width: 60px;">天數</th>
+                <th style="width: 55px;">瑕疵</th>
+                <th style="width: 100px;">到期日</th>
+                <th style="width: 65px;">幣別</th>
+                <th style="width: 110px;">收款金額</th>
+                <th style="width: 80px;">繳存狀態</th>
+              </tr>
+            </thead>
+            <tbody id="modal-invoice-summary-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+          <table class="custom-table" style="border: none;">
+            <thead>
+              <tr class="bg-slate-100 text-slate-800 text-xs font-black">
+                <th style="width: 48px;" class="text-center">NO</th>
+                <th class="text-left">處理說明內容 (含人工與 AI 摘要各自獨立勾選)</th>
+                <th style="width: 110px;" class="text-center">說明單位</th>
+                <th style="width: 110px;" class="text-center">說明人員</th>
+                <th style="width: 145px;" class="text-center">更新時間</th>
+                <th style="width: 95px;" class="text-center">附件</th>
+                <th style="width: 55px;" class="text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="modal-history-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 查看刪除註記詳細資訊對話框 -->
+  <div class="modal-backdrop" id="delete-audit-modal" style="z-index: 290;">
+    <div class="modal-container shadow-2xl" style="max-width: 480px;">
+      <div class="bg-slate-900 text-white p-3.5 px-4 flex items-center justify-between border-b border-slate-800">
+        <h3 class="font-black text-sm flex items-center gap-2 text-rose-300">
+          <i class="fa-solid fa-trash-can"></i> AI 摘要刪除註記詳細資訊
+        </h3>
+        <button type="button" class="text-slate-400 hover:text-white" onclick="closeDeleteAuditModal()">✕</button>
+      </div>
+      <div class="p-4 space-y-3 bg-slate-50/80 text-xs md:text-sm">
+        <div class="bg-white p-3.5 rounded-xl border border-rose-200 shadow-xs space-y-2">
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+            <span class="text-slate-500 font-bold">發票號碼：</span>
+            <span id="audit-inv-no" class="font-black text-blue-700 font-mono"></span>
+          </div>
+          <div class="flex justify-between border-b border-slate-100 pb-1.5">
+            <span class="text-slate-500 font-bold">刪除日期/時間：</span>
+            <span id="audit-del-time" class="font-black text-rose-700 font-mono"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500 font-bold">操作人員：</span>
+            <span id="audit-del-user" class="font-black text-slate-900"></span>
+          </div>
+        </div>
+        <div class="p-2.5 bg-rose-50 rounded-lg text-rose-900 text-xs font-bold leading-relaxed border border-rose-200">
+          📌 此 AI 摘要已於管理單位處理進度說明中標註為刪除，不納入轉出報告。
+        </div>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button type="button" class="btn-func" onclick="closeDeleteAuditModal()">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 批次說明作業對話框 -->
+  <div class="modal-backdrop" id="batch-modal">
+    <div class="modal-container shadow-2xl" style="max-width: 1080px;">
+      <div class="bg-slate-900 text-white p-4 px-5 flex items-center justify-between border-b border-slate-800">
+        <h3 class="font-black text-sm md:text-base flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-yellow-400"></i> ⚡ 批次說明作業
+        </h3>
+        <button type="button" class="text-slate-400 hover:text-white text-lg" onclick="closeBatchModal()">✕</button>
+      </div>
+      <div class="p-5 space-y-4 max-h-[80vh] overflow-y-auto bg-slate-50/60 text-xs md:text-sm">
+        
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="font-black text-xs md:text-sm text-slate-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-filter text-blue-600"></i> 🔻 勾選欲批次處理發票：
+              </span>
+              <label class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 font-black text-xs cursor-pointer">
+                <input type="checkbox" id="logged-user-only-cb" checked onchange="renderBatchTable()" class="h-4 w-4 rounded border-blue-400 text-blue-600">
+                <span>👤 僅顯示目前登入人員 (王大明)</span>
+              </label>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" class="btn-func btn-compact" onclick="selectAllBatchInvoices(true)">全選 (顯示項)</button>
+              <button type="button" class="btn-func btn-compact" onclick="selectAllBatchInvoices(false)">全不選</button>
+            </div>
+          </div>
+
+          <div class="relative">
+            <input type="text" id="batch-inv-search-input" onkeyup="renderBatchTable()" placeholder="🔍 查詢發票號碼、客戶名稱、業務或事業群..." class="w-full pl-9 pr-3 py-2 text-xs md:text-sm border border-slate-300 rounded-xl bg-white shadow-xs focus:outline-none focus:border-blue-500 font-semibold">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+          </div>
+
+          <div class="table-scroll border border-slate-300 rounded-xl bg-white shadow-inner max-h-[170px]">
+            <table class="custom-table" id="batch-inv-table" style="border: none;">
+              <thead>
+                <tr class="bg-slate-100 text-xs font-black">
+                  <th style="width: 45px;">選取</th>
+                  <th style="width: 48px;">NO</th>
+                  <th style="width: 85px;">逾期天數</th>
+                  <th style="width: 95px;">業務</th>
+                  <th style="width: 90px;">事業群</th>
+                  <th class="text-left">客戶名稱</th>
+                  <th style="width: 120px;">發票號碼</th>
+                  <th style="width: 48px;">項次</th>
+                  <th style="width: 90px;">收款方式</th>
+                  <th style="width: 60px;">幣別</th>
+                  <th style="width: 100px;">金額</th>
+                </tr>
+              </thead>
+              <tbody id="batch-table-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="font-black text-xs md:text-sm text-slate-800 block">選擇常用說明 (可複選)：</label>
+            <button type="button" class="btn-func btn-compact text-blue-800 bg-blue-50 border-blue-300 hover:bg-blue-100" onclick="openPresetEditorModal()">
+              <i class="fa-solid fa-pen-to-square text-xs"></i> 編輯常用說明
+            </button>
+          </div>
+          <div class="space-y-2" id="batch-preset-container"></div>
+        </div>
+
+        <div class="space-y-2 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between">
+            <label class="font-black text-slate-900 text-xs md:text-sm flex items-center gap-2">
+              <input type="radio" name="batch_content_source" value="manual" checked class="h-4 w-4 text-blue-600">
+              <span>📝 人工批次說明內容 (Rich Editor)</span>
+            </label>
+            <button type="button" class="btn-func btn-compact text-blue-800 bg-blue-50 border-blue-300 hover:bg-blue-100" onclick="extractAiForBatchModal()">
+              <i class="fa-solid fa-wand-magic-sparkles text-blue-600 text-xs"></i> ✨ AI 摘要提煉
+            </button>
+          </div>
+
+          <div class="editor-toolbar">
+            <button type="button" class="editor-btn" title="粗體" onclick="execEditorCommand('bold')"><i class="fa-solid fa-bold"></i></button>
+            <button type="button" class="editor-btn" title="斜體" onclick="execEditorCommand('italic')"><i class="fa-solid fa-italic"></i></button>
+            <button type="button" class="editor-btn" title="底線" onclick="execEditorCommand('underline')"><i class="fa-solid fa-underline"></i></button>
+            <div class="w-px h-4 bg-slate-300 mx-1"></div>
+            <button type="button" class="editor-btn" title="無序清單" onclick="execEditorCommand('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i></button>
+            <button type="button" class="editor-btn" title="數字清單" onclick="execEditorCommand('insertOrderedList')"><i class="fa-solid fa-list-ol"></i></button>
+          </div>
+          <div id="batch-rich-editor" class="editor-canvas" contenteditable="true"></div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs md:text-sm font-black text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-paperclip text-slate-500"></i> 📎 批次附件上傳功能 (支援上傳、下載、預覽)
+            </span>
+            <input type="file" id="batchFileInput" multiple class="hidden" onchange="handleBatchFileUpload(this)">
+            <button type="button" onclick="document.getElementById('batchFileInput').click()" class="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-300 text-blue-800 font-bold text-xs hover:bg-blue-100 shadow-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-plus text-xs"></i> 選擇附件檔案
+            </button>
+          </div>
+          <div id="batchFileBadges" class="flex flex-wrap gap-2 min-h-[30px] items-center pt-1 border-t border-slate-100"></div>
+        </div>
+
+      </div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+        <button type="button" class="btn-func" onclick="closeBatchModal()">取消</button>
+        <button type="button" class="btn-batch" onclick="applyBatchContentAndSyncFormal()">
+          <i class="fa-solid fa-cloud-arrow-up text-sm"></i> 確認帶入說明並提交本處
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 常用說明編輯管理視窗 -->
+  <div class="modal-backdrop" id="preset-editor-modal">
+    <div class="modal-container" style="max-width: 580px;">
+      <div class="bg-slate-900 text-white p-4 px-5 flex items-center justify-between border-b border-slate-800">
+        <h3 class="font-black text-sm md:text-base"><i class="fa-solid fa-pen-to-square text-blue-400 mr-1.5"></i> 編輯常用說明語句</h3>
+        <button type="button" class="text-slate-400 hover:text-white" onclick="closePresetEditorModal()">✕</button>
+      </div>
+      <div class="p-5 space-y-3.5 text-xs md:text-sm">
+        <p class="text-slate-600 font-semibold">在此新增、修改或刪除系統內建的常用追蹤說明：</p>
+        <div id="preset-editor-list" class="space-y-2.5 max-h-[220px] overflow-y-auto"></div>
+        <div class="flex items-center gap-2 pt-2">
+          <input type="text" id="new-preset-input" placeholder="輸入新的常用說明語句..." class="flex-1 p-2.5 border border-slate-300 rounded-xl text-xs md:text-sm font-semibold focus:outline-none focus:border-blue-500">
+          <button type="button" class="btn-batch btn-compact" onclick="addNewPresetItem()">新增語句</button>
+        </div>
+      </div>
+      <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+        <button type="button" class="btn-func" onclick="closePresetEditorModal()">關閉儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AI Prompt 提示詞設定視窗 -->
+  <div class="modal-backdrop" id="prompt-modal">
+    <div class="modal-container" style="max-width: 620px;">
+      <div class="bg-slate-900 text-white p-4 px-5 flex items-center justify-between border-b border-slate-800">
+        <h3 class="font-black text-sm md:text-base"><i class="fa-solid fa-sliders text-blue-400 mr-1.5"></i> ⚙️ AI 摘要提示詞 (Prompt) 設定</h3>
+        <button type="button" class="text-slate-400 hover:text-white" onclick="closePromptModal()">✕</button>
+      </div>
+      <div class="p-5 space-y-3 text-xs md:text-sm">
+        <p class="text-slate-600 font-semibold">此提示詞將做為全系統點擊「✨ AI摘要提煉」時的分析規則基準：</p>
+        <textarea id="prompt-textarea" rows="6" class="w-full p-3 border border-slate-300 rounded-xl font-mono text-xs md:text-sm focus:border-blue-500 shadow-inner focus:outline-none leading-relaxed">你是一個專業的企業 AR 帳款追蹤 AI 助手。
+請分析使用者輸入的追蹤對話與紀錄內容，提取出：
+1. 最新付款承諾日期與金額
+2. 延遲原因與當前協商狀態
+3. 文句要排版通順、正式，適合向高層主管報告的風格
+4. 用繁體中文，以條列方式(1/2/3...) 輸出說明內容（不超過 60 字）。</textarea>
+      </div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2.5">
+        <button type="button" class="btn-func" onclick="closePromptModal()">取消</button>
+        <button type="button" class="btn-batch" onclick="closePromptModal(); showToast('✅ AI 提示詞設定已成功儲存！');">儲存提示詞設定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Toast Notification Box -->
+  <div id="custom-toast">
+    <i class="fa-solid fa-circle-exclamation text-amber-400 text-base"></i>
+    <span id="custom-toast-message">提示訊息</span>
+  </div>
+
+  <script>
+    const appState = {
+      user: {
+        id: 'E10245',
+        name: '王大明',
+        unit: '固聚酯粒',
+        jobTitle: '業務',
+        handledExporters: ['FENC'],
+        handledSellers: ['FENC'],
+        handledBgs: ['solid_pet']
+      },
+
+      filters: { 
+        activeTab: '16_plus', 
+        exporters: ['FENC', 'FEAV'], 
+        sellers: ['FENC', 'FNIS', 'OIHN'], 
+        businessGroups: ['solid_pet', 'staple_fiber', 'apparel'], 
+        buyers: ['F09881', 'F01121', 'F03342', 'F05520'] 
+      },
+
+      baseDate: new Date('2026/08/31'),
+      isLibraryExpanded: false,
+      uploadedFiles: [],
+
+      presets: [
+        "(1) 已通知客戶儘速付清貨款並提供匯款水單",
+        "(2) 客戶匯款內容異常，已通知客戶儘速更正匯款電文",
+        "(3) 客戶放假結束後，將安排匯款"
+      ],
+
+      // 疑似異常通知資料集
+      abnormalNotices: [
+        {
+          id: 'ABN-01',
+          seller: 'FENC',
+          exporter: 'FENC',
+          bgName: '固聚酯粒',
+          unSentRegions: '東北亞、東亞、東南亞、中西歐、北美洲 (未寄出)',
+          warehouse: '非國外倉',
+          operator: '王大明 (E10245)',
+          reason: '「南亞」已寄出；其餘地區於設定日 2026/08/27 後逾 3 天未寄出'
+        },
+        {
+          id: 'ABN-02',
+          seller: 'OIHN',
+          exporter: 'FENC',
+          bgName: '固聚酯粒',
+          unSentRegions: '中西歐、東歐、北歐、南歐 (未寄出)',
+          warehouse: '歐洲倉',
+          operator: '張美麗 (E10288)',
+          reason: '歐洲倉各指定地區排程未依期發送，已逾期 2 天以上'
+        },
+        {
+          id: 'ABN-03',
+          seller: 'FNIS',
+          exporter: 'FEAV',
+          bgName: '成衣',
+          unSentRegions: '東北亞、東亞、南亞、中東 (未寄出)',
+          warehouse: '非國外倉',
+          operator: '李小健 (E10299)',
+          reason: '「東南亞」已寄出；其餘排程執行失敗 (連線逾時)，尚未補發'
+        }
+      ],
+
+      // Email 歷程紀錄
+      emailLogs: [
+        {
+          id: 'EML-20260830-01',
+          seller: 'FENC',
+          exporter: 'FENC',
+          bgKey: 'solid_pet',
+          bgName: '固聚酯粒',
+          region: '南亞',
+          warehouse: '非國外倉',
+          sendTimestamp: new Date('2026/08/30 14:55:24'),
+          senderType: 'user',
+          sender: '王大明 (E10245)',
+          attachment: 'Manual_AR_Notice_E10245_4357.xlsx',
+          body: '各位長官、同仁好：\n\n此為登入人員 [王大明 (E10245)] 於系統手動觸發發送之【固聚酯粒 - 南亞】即時應收帳款通知報表。'
+        },
+        {
+          id: 'EML-20260827-01',
+          seller: 'FENC',
+          exporter: 'FENC',
+          bgKey: 'solid_pet',
+          bgName: '固聚酯粒',
+          region: 'ALL',
+          warehouse: '非國外倉',
+          sendTimestamp: new Date('2026/08/27 09:00:00'),
+          senderType: 'system',
+          sender: '系統自動寄出',
+          attachment: 'AR_Weekly_Report_FENC_PET_20260827.xlsx',
+          body: '各位長官、業務同仁好：\n\n檢附 2026/08/27 (星期四) 【固聚酯粒】每週應收帳款通知報表。'
+        }
+      ],
+
+      // 完整發票資料集 (依據業務規則全面更新)
+      invoices: [
+        { 
+          id: 'FTCS26020020', 
+          salesId: 'E10245', 
+          salesName: '王大明', 
+          negotiator: '張智成',
+          bg: 'solid_pet', 
+          bgName: '固聚酯粒', 
+          customer: 'VINAY PLASTICS(IN)_F01121', 
+          buyerId: 'F01121', 
+          seller: 'FENC', 
+          exporter: 'FENC', 
+          warehouse: '非國外倉',
+          seq: 1, 
+          method: 'T/T', 
+          term: 0, 
+          curr: 'USD', 
+          amount: 30000, 
+          dueDate: '2026/03/15', 
+          depositStatus: 'N', 
+          frozenStatus: '凍結', 
+          frozenDate: '2026/08/01', 
+          history: [
+            { 
+              time: '2026/08/25 15:42:52', 
+              text: '7/31/2026，客戶更新最新分期付款計劃：第1期 USD 10,000；第2期 USD 20,000。', 
+              unit: '固聚酯粒', 
+              sales: '業務 王大明', 
+              attachments: 2, 
+              aiSummary: '1. 最新付款承諾：客戶承諾分期付款，第一期 10,000 USD，第二期 20,000 USD。',
+              aiDeletedInfo: null 
+            }, 
+            { 
+              time: '2026/08/24 16:30:00', 
+              text: '國外買主聯繫，承諾將於本週內完成首筆 30,000 USD 電匯劃報。', 
+              unit: '固聚酯粒', 
+              sales: '業務 王大明', 
+              attachments: 1,
+              aiSummary: null 
+            }
+          ] 
+        },
+        { 
+          id: 'FTCS26020021', 
+          salesId: 'E10245', 
+          salesName: '王大明', 
+          negotiator: '張智成',
+          bg: 'solid_pet', 
+          bgName: '固聚酯粒', 
+          customer: 'VINAY PLASTICS(IN)_F01121', 
+          buyerId: 'F01121', 
+          seller: 'FENC', 
+          exporter: 'FENC', 
+          warehouse: '非國外倉',
+          seq: 2, 
+          method: 'USANCE', 
+          term: 90, 
+          curr: 'EUR', 
+          amount: 70000, 
+          dueDate: '2026/04/10', 
+          depositStatus: 'N', 
+          frozenStatus: '凍結', 
+          frozenDate: '2026/08/05', 
+          history: [
+            { 
+              time: '2026/08/27 06:38:40', 
+              text: '已通知客戶儘速付清貨款並提供水單', 
+              unit: '固聚酯粒', 
+              sales: '業務 王大明', 
+              attachments: 1,
+              aiSummary: '已催收，客戶承諾待核對帳目無誤後匯出。',
+              aiDeletedInfo: null 
+            }
+          ] 
+        },
+        { 
+          id: 'TVKC26020030', 
+          salesId: 'E10299', 
+          salesName: '李小健', 
+          negotiator: '林可為',
+          bg: 'apparel', 
+          bgName: '成衣', 
+          customer: 'TECH-PLAST(KR)_F09881', 
+          buyerId: 'F09881', 
+          seller: 'FNIS', 
+          exporter: 'FEAV', 
+          warehouse: '非國外倉',
+          seq: 1, 
+          method: 'O/A', 
+          term: 30, 
+          curr: 'USD', 
+          amount: 45000, 
+          dueDate: '2026/02/10', 
+          depositStatus: 'N', 
+          frozenStatus: '凍結', 
+          frozenDate: '2026/07/15', 
+          history: [] 
+        },
+        { 
+          id: 'FTFN26020040', 
+          salesId: 'E10288', 
+          salesName: '張美麗', 
+          negotiator: '劉曉明',
+          bg: 'staple_fiber', 
+          bgName: '短纖', 
+          customer: 'FORMOSA TEXTILES(VN)_F03342', 
+          buyerId: 'F03342', 
+          seller: 'OIHN', 
+          exporter: 'FENC', 
+          warehouse: '歐洲倉',
+          seq: 1, 
+          method: 'O/A', 
+          term: 90, 
+          curr: 'USD', 
+          amount: 52000, 
+          dueDate: '2026/01/15', 
+          depositStatus: 'N', 
+          frozenStatus: '凍結', 
+          frozenDate: '2026/06/01', 
+          history: [] 
+        },
+        { 
+          id: 'FTCS26081001', 
+          salesId: 'E10245', 
+          salesName: '王大明', 
+          negotiator: '張智成',
+          bg: 'solid_pet', 
+          bgName: '固聚酯粒', 
+          customer: 'TECH-PLAST(KR)_F09881', 
+          buyerId: 'F09881', 
+          seller: 'FENC', 
+          exporter: 'FENC', 
+          warehouse: '非國外倉',
+          seq: 1, 
+          method: 'O/A', 
+          term: 30, 
+          curr: 'USD', 
+          amount: 18000, 
+          dueDate: '2026/08/18', 
+          depositStatus: 'N', 
+          frozenStatus: '正常', 
+          frozenDate: '-', 
+          history: [] 
+        },
+        { 
+          id: 'FTCS26082001', 
+          salesId: 'E10245', 
+          salesName: '王大明', 
+          negotiator: '張智成',
+          bg: 'solid_pet', 
+          bgName: '固聚酯粒', 
+          customer: 'VINAY PLASTICS(IN)_F01121', 
+          buyerId: 'F01121', 
+          seller: 'FENC', 
+          exporter: 'FENC', 
+          warehouse: '非國外倉',
+          seq: 3, 
+          method: 'O/A', 
+          term: 30, 
+          curr: 'USD', 
+          amount: 25000, 
+          dueDate: '2026/09/05', 
+          depositStatus: 'N', 
+          frozenStatus: '正常', 
+          frozenDate: '-', 
+          history: [] 
+        }
+      ],
+
+      // 管理單位處理進度說明資料集
+      managementProgress: [
+        {
+          id: 'MGMT-01',
+          invNo: 'FTCS26020020',
+          seq: 1,
+          customer: 'VINAY PLASTICS(IN)_F01121',
+          bg: 'solid_pet',
+          bgName: '固聚酯粒',
+          amount: 30000,
+          curr: 'USD',
+          overdue: 169,
+          salesId: 'E10245',
+          salesName: '王大明',
+          negotiator: '張智成',
+          seller: 'FENC',
+          exporter: 'FENC',
+          warehouse: '非國外倉',
+          manualNote: '客戶更新最新分期付款計劃：第1期 USD 10,000；第2期 USD 20,000。',
+          aiSummary: '客戶承諾分期付款，第一期 10,000 USD，第二期 20,000 USD。',
+          syncTime: '2026/08/25 15:45:10',
+          attachments: 2,
+          status: 'exportable',
+          deletedInfo: null
+        },
+        {
+          id: 'MGMT-02',
+          invNo: 'FTCS26020021',
+          seq: 2,
+          customer: 'VINAY PLASTICS(IN)_F01121',
+          bg: 'solid_pet',
+          bgName: '固聚酯粒',
+          amount: 70000,
+          curr: 'EUR',
+          overdue: 143,
+          salesId: 'E10245',
+          salesName: '王大明',
+          negotiator: '張智成',
+          seller: 'FENC',
+          exporter: 'FENC',
+          warehouse: '非國外倉',
+          manualNote: '已通知客戶儘速付清貨款並提供水單',
+          aiSummary: '已催收，客戶承諾待核對帳目無誤後匯出。',
+          syncTime: '2026/08/27 06:40:15',
+          attachments: 1,
+          status: 'exportable',
+          deletedInfo: null
+        },
+        {
+          id: 'MGMT-03',
+          invNo: 'TVKC26020030',
+          seq: 1,
+          customer: 'TECH-PLAST(KR)_F09881',
+          bg: 'apparel',
+          bgName: '成衣',
+          amount: 45000,
+          curr: 'USD',
+          overdue: 202,
+          salesId: 'E10299',
+          salesName: '李小健',
+          negotiator: '林可為',
+          seller: 'FNIS',
+          exporter: 'FEAV',
+          warehouse: '非國外倉',
+          manualNote: '韓國買方通報因航運延誤貨款請款，預計 9 月初安排結算',
+          aiSummary: '航運延遲待請款，預計 9 月初結清。',
+          syncTime: '2026/08/26 11:20:00',
+          attachments: 1,
+          status: 'exportable',
+          deletedInfo: null
+        },
+        {
+          id: 'MGMT-04',
+          invNo: 'FTFN26020040',
+          seq: 1,
+          customer: 'FORMOSA TEXTILES(VN)_F03342',
+          bg: 'staple_fiber',
+          bgName: '短纖',
+          amount: 52000,
+          curr: 'USD',
+          overdue: 228,
+          salesId: 'E10288',
+          salesName: '張美麗',
+          negotiator: '劉曉明',
+          seller: 'OIHN',
+          exporter: 'FENC',
+          warehouse: '歐洲倉',
+          manualNote: '歐洲倉提單確認中，買方已排定本週五前支付尾款',
+          aiSummary: '提單已確認，承諾週五前結清尾款。',
+          syncTime: '2026/08/28 14:15:30',
+          attachments: 2,
+          status: 'exportable',
+          deletedInfo: null
+        }
+      ],
+
+      getProcessedInvoices() {
+        return this.invoices.map(inv => {
+          const due = new Date(inv.dueDate);
+          const diffTime = this.baseDate - due;
+          const calculatedOverdue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          let category = 'neg15_to_0';
+          if (calculatedOverdue >= 16) category = '16_plus';
+          else if (calculatedOverdue >= 1 && calculatedOverdue <= 15) category = '1_to_15';
+          return { ...inv, overdue: calculatedOverdue, category };
+        });
+      }
+    };
+
+    let currentRole = 'admin';
+
+    const STANDARD_BASE_FONT_SIZE = 15;
+    const DEFAULT_FONT_SIZE = 14; // 14 / 15 ≈ 93%
+    let currentBaseFontSize = DEFAULT_FONT_SIZE;
+    const MIN_FONT_SIZE = 11;
+    const MAX_FONT_SIZE = 22;
+
+    function getStorageKeyForUserFont() {
+      return `fenc_ar_user_font_size_${appState.user.id}`;
+    }
+
+    function initUserFontSize() {
+      const saved = localStorage.getItem(getStorageKeyForUserFont());
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= MIN_FONT_SIZE && parsed <= MAX_FONT_SIZE) {
+          currentBaseFontSize = parsed;
+        }
+      } else {
+        currentBaseFontSize = DEFAULT_FONT_SIZE;
+      }
+      updateFontDisplay();
+    }
+
+    function toggleRememberFontSize(isChecked) {
+      if (isChecked) {
+        localStorage.setItem(getStorageKeyForUserFont(), currentBaseFontSize);
+        showToast(`💾 已儲存目前字體偏好 (${Math.round((currentBaseFontSize / STANDARD_BASE_FONT_SIZE) * 100)}%)，下次登入將自動套用！`);
+      } else {
+        localStorage.removeItem(getStorageKeyForUserFont());
+        showToast('ℹ️ 已取消記住設定');
+      }
+    }
+
+    function updateFontDisplay() {
+      const htmlEl = document.getElementById('root-html');
+      htmlEl.style.fontSize = `${currentBaseFontSize}px`;
+      const percent = Math.round((currentBaseFontSize / STANDARD_BASE_FONT_SIZE) * 100);
+      const displayEl = document.getElementById('font-scale-display');
+      if (displayEl) {
+        displayEl.textContent = `${percent}%`;
+      }
+      const rememberCb = document.getElementById('remember-font-size-cb');
+      if (rememberCb && rememberCb.checked) {
+        localStorage.setItem(getStorageKeyForUserFont(), currentBaseFontSize);
+      }
+    }
+
+    function adjustFontSize(delta) {
+      const newSize = currentBaseFontSize + delta;
+      if (newSize >= MIN_FONT_SIZE && newSize <= MAX_FONT_SIZE) {
+        currentBaseFontSize = newSize;
+        updateFontDisplay();
+        const percent = Math.round((currentBaseFontSize / STANDARD_BASE_FONT_SIZE) * 100);
+        showToast(`🔠 字體大小已調整為：${percent}% (${currentBaseFontSize}px)`);
+      } else if (newSize < MIN_FONT_SIZE) {
+        showToast('⚠️ 已達最小字體限制');
+      } else if (newSize > MAX_FONT_SIZE) {
+        showToast('⚠️ 已達最大字體限制');
+      }
+    }
+
+    function resetFontSize() {
+      currentBaseFontSize = DEFAULT_FONT_SIZE;
+      updateFontDisplay();
+      showToast('🔠 已還原為 93% 預設字體大小');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('custom-toast');
+      const msgSpan = document.getElementById('custom-toast-message');
+      if (toast && msgSpan) {
+        msgSpan.textContent = msg;
+        toast.classList.add('active');
+        setTimeout(() => { toast.classList.remove('active'); }, 3200);
+      }
+    }
+
+    function initBaseDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+      
+      const picker = document.getElementById('base-date-picker');
+      if (picker) {
+        picker.value = todayStr;
+        appState.baseDate = new Date(todayStr);
+      }
+    }
+
+    function handleBaseDateChange(newVal) {
+      if (!newVal) return;
+      appState.baseDate = new Date(newVal);
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      if (newVal !== todayStr) {
+        const formattedDisplay = newVal.replace(/-/g, '/');
+        showToast(`⚠️ 基準日非今日 (${formattedDisplay})，請確認日期是否正確？`);
+      } else {
+        showToast(`🗓️ 基準日已設定為今日 (${newVal.replace(/-/g, '/')})`);
+      }
+
+      renderCustomerCards();
+      renderManagementProgressTable();
+    }
+
+    function refreshArData() {
+      initBaseDate();
+      renderCustomerCards();
+      renderManagementProgressTable();
+      showToast('✅ AR 帳款明細資料與逾期天數已更新至最新基準日！');
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const icon = document.getElementById('sidebar-toggle-icon');
+      if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+        if (icon) {
+          icon.classList.toggle('fa-chevron-left');
+          icon.classList.toggle('fa-chevron-right');
+        }
+      }
+    }
+
+    function toggleSubmenu(id) {
+      const el = document.getElementById(id);
+      const arrow = document.getElementById('ar-submenu-arrow');
+      if (el) {
+        el.classList.toggle('hidden');
+        if (arrow) arrow.classList.toggle('rotate-180');
+      }
+    }
+
+    function switchNavSection(sectionKey) {
+      const reportSec = document.getElementById('section-report');
+      const emailSec = document.getElementById('section-email');
+      const navReportBtn = document.getElementById('nav-btn-report');
+      const navEmailBtn = document.getElementById('nav-btn-email');
+
+      if (sectionKey === 'report') {
+        reportSec.classList.remove('hidden');
+        emailSec.classList.add('hidden');
+        navReportBtn.className = 'flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold text-white bg-blue-600 shadow-md';
+        navEmailBtn.className = 'flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors';
+      } else if (sectionKey === 'email') {
+        reportSec.classList.add('hidden');
+        emailSec.classList.remove('hidden');
+        navEmailBtn.className = 'flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold text-white bg-blue-600 shadow-md';
+        navReportBtn.className = 'flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors';
+        renderEmailLogsTable();
+        renderAbnormalNotices();
+      }
+    }
+
+    function changeSimulatedUser(roleKey) {
+      if (roleKey === 'sales_wang') {
+        appState.user = { id: 'E10245', name: '王大明', unit: '固聚酯粒', jobTitle: '業務', handledExporters: ['FENC'], handledSellers: ['FENC'], handledBgs: ['solid_pet'] };
+      } else if (roleKey === 'sales_lee') {
+        appState.user = { id: 'E10299', name: '李小健', unit: '成衣', jobTitle: '業務', handledExporters: ['FEAV'], handledSellers: ['FNIS'], handledBgs: ['apparel'] };
+      } else if (roleKey === 'admin_intl') {
+        appState.user = { id: 'E10001', name: '林資深', unit: '台北國際事務處', jobTitle: '資深經理', handledExporters: ['FENC', 'FEAV'], handledSellers: ['FENC', 'FNIS', 'OIHN'], handledBgs: ['solid_pet', 'staple_fiber', 'apparel'] };
+      }
+
+      document.getElementById('current-user-display').textContent = `${appState.user.name} (${appState.user.id})`;
+      document.getElementById('current-unit-display').textContent = `${appState.user.unit} / ${appState.user.jobTitle}`;
+      document.getElementById('sidebar-user-avatar').textContent = appState.user.name.charAt(0);
+      document.getElementById('sidebar-user-title').textContent = `${appState.user.jobTitle} ${appState.user.name}`;
+      document.getElementById('sidebar-user-desc').textContent = `${appState.user.unit} (${appState.user.id})`;
+
+      initUserFontSize();
+      renderEmailLogsTable();
+      renderAbnormalNotices();
+      renderCustomerCards();
+      renderManagementProgressTable();
+      showToast(`🔄 已切換視角為：${appState.user.name} (${appState.user.unit} ${appState.user.jobTitle})`);
+    }
+
+    function toggleFilterSection() {
+      const pill = document.getElementById('filter-collapsed-pill');
+      const panel = document.getElementById('filter-expanded-panel');
+      if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        pill.classList.add('hidden');
+      } else {
+        panel.classList.add('hidden');
+        pill.classList.remove('hidden');
+      }
+    }
+
+    function toggleDropdown(panelId) {
+      const targetPanel = document.getElementById(panelId);
+      const isVisible = targetPanel.style.display === 'block';
+      document.querySelectorAll('.multiselect-panel').forEach(p => p.style.display = 'none');
+      if (!isVisible) targetPanel.style.display = 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.multiselect-container') && !e.target.closest('#filter-collapsed-pill') && !e.target.closest('#export-dropdown-container')) {
+        document.querySelectorAll('.multiselect-panel').forEach(p => p.style.display = 'none');
+        const exportMenu = document.getElementById('export-dropdown-menu');
+        if (exportMenu) exportMenu.classList.add('hidden');
+      }
+    });
+
+    function toggleAllOptions(checkboxClass, selectState) {
+      document.querySelectorAll(`.${checkboxClass}`).forEach(cb => { cb.checked = selectState; });
+      updateFilterLabels();
+      renderCustomerCards();
+    }
+
+    function updateFilterLabels() {
+      const exporterCbs = document.querySelectorAll('.exporter-cb');
+      const checkedExporters = document.querySelectorAll('.exporter-cb:checked');
+      const exporterLabel = document.getElementById('exporter-label');
+      if (exporterLabel) {
+        exporterLabel.textContent = checkedExporters.length === 0 ? '未選取' : (checkedExporters.length === exporterCbs.length ? `全 (${exporterCbs.length})` : checkedExporters[0].value);
+      }
+
+      const sellerCbs = document.querySelectorAll('.seller-cb');
+      const checkedSellers = document.querySelectorAll('.seller-cb:checked');
+      const sellerLabel = document.getElementById('seller-label');
+      if (sellerLabel) {
+        sellerLabel.textContent = checkedSellers.length === 0 ? '未選取' : (checkedSellers.length === sellerCbs.length ? `全 (${sellerCbs.length})` : `已選 ${checkedSellers.length} 個`);
+      }
+
+      const bgCbs = document.querySelectorAll('.bg-cb');
+      const checkedBgs = document.querySelectorAll('.bg-cb:checked');
+      const bgLabel = document.getElementById('bg-label');
+      if (bgLabel) {
+        bgLabel.textContent = checkedBgs.length === 0 ? '未選取' : (checkedBgs.length === bgCbs.length ? `全 (${bgCbs.length})` : `已選 ${checkedBgs.length} 項`);
+      }
+
+      const buyerCbs = document.querySelectorAll('.buyer-cb');
+      const checkedBuyers = document.querySelectorAll('.buyer-cb:checked');
+      const buyerLabel = document.getElementById('buyer-label');
+      if (buyerLabel) {
+        buyerLabel.textContent = checkedBuyers.length === 0 ? '未選取' : (checkedBuyers.length === buyerCbs.length ? `全 (${buyerCbs.length})` : `已選 ${checkedBuyers.length} 個`);
+      }
+
+      const hoverText = document.getElementById('hover-summary-text');
+      if (hoverText) {
+        hoverText.textContent = `出口商：${exporterLabel?.textContent || ''} | 賣方：${sellerLabel?.textContent || ''} | 事業群：${bgLabel?.textContent || ''} | 買方：${buyerLabel?.textContent || ''}`;
+      }
+    }
+
+    function bindAllFilterEvents() {
+      document.querySelectorAll('.exporter-cb, .seller-cb, .bg-cb, .buyer-cb').forEach(cb => {
+        cb.addEventListener('change', () => {
+          updateFilterLabels();
+          renderCustomerCards();
+        });
+      });
+    }
+
+    function switchTab(tabName, clickedBtn) {
+      appState.filters.activeTab = tabName;
+      document.querySelectorAll('.tab-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-blue-700', 'shadow-sm', 'border', 'border-slate-300');
+        btn.classList.add('text-slate-700');
+      });
+      clickedBtn.classList.add('bg-white', 'text-blue-700', 'shadow-sm', 'border', 'border-slate-300');
+      clickedBtn.classList.remove('text-slate-700');
+      renderCustomerCards();
+    }
+
+    function renderCustomerCards() {
+      const container = document.getElementById('cards-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const processedInvoices = appState.getProcessedInvoices();
+      const currentTab = appState.filters.activeTab;
+      
+      const selectedExporters = Array.from(document.querySelectorAll('.exporter-cb:checked')).map(cb => cb.value);
+      const selectedSellers = Array.from(document.querySelectorAll('.seller-cb:checked')).map(cb => cb.value);
+      const selectedBgs = Array.from(document.querySelectorAll('.bg-cb:checked')).map(cb => cb.value);
+      const selectedBuyers = Array.from(document.querySelectorAll('.buyer-cb:checked')).map(cb => cb.value);
+
+      const filteredInvoices = processedInvoices.filter(inv => {
+        const matchTab = inv.category === currentTab;
+        const matchExporter = selectedExporters.length === 0 || selectedExporters.includes(inv.exporter);
+        const matchSeller = selectedSellers.length === 0 || selectedSellers.includes(inv.seller);
+        const matchBg = selectedBgs.length === 0 || selectedBgs.includes(inv.bg);
+        const matchBuyer = selectedBuyers.length === 0 || selectedBuyers.includes(inv.buyerId);
+        return matchTab && matchExporter && matchSeller && matchBg && matchBuyer;
+      });
+
+      if (filteredInvoices.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-400 bg-white rounded-2xl border-2 border-slate-200 text-sm font-bold">目前分區無符合篩選條件的發票資料。</div>`;
+        return;
+      }
+
+      const groupedByCustomer = {};
+      filteredInvoices.forEach(inv => {
+        if (!groupedByCustomer[inv.customer]) groupedByCustomer[inv.customer] = [];
+        groupedByCustomer[inv.customer].push(inv);
+      });
+
+      let html = '';
+      let cardIndex = 1;
+
+      for (const [customerName, invoices] of Object.entries(groupedByCustomer)) {
+        const sample = invoices[0];
+        html += `
+          <div class="customer-accordion-card card-item" data-buyer="${sample.buyerId}" data-seller="${sample.seller}" data-bg="${sample.bg}">
+            <div class="customer-accordion-header" onclick="toggleCardAccordion('cust-body-${cardIndex}', 'cust-icon-${cardIndex}')">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <span class="text-sm md:text-base font-black text-slate-950">🏢 ${customerName}</span>
+                <span class="cust-badge-pill">出口商: ${sample.exporter}</span>
+                <span class="cust-badge-pill">賣方: ${sample.seller}</span>
+                <span class="cust-badge-pill">事業群: ${sample.bgName}</span>
+                <span class="cust-badge-pill">責任業務: ${sample.salesName} (${sample.salesId})</span>
+                <span class="cust-status-pill">🚨 狀態: 帳款追蹤中 (${invoices.length} 筆發票)</span>
+              </div>
+              <span class="text-xs md:text-sm font-black text-blue-700 hover:underline" id="cust-icon-${cardIndex}">▼ 展開明細</span>
+            </div>
+
+            <div id="cust-body-${cardIndex}" class="hidden p-4 space-y-3">
+              <div class="overflow-x-auto">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 45px;">NO</th>
+                      <th style="width: 80px;">逾期天數</th>
+                      <th style="width: 85px;">凍結出口</th>
+                      <th style="width: 120px;">凍結/解凍生效日</th>
+                      <th style="width: 130px;">發票號碼</th>
+                      <th style="width: 55px;">項次</th>
+                      <th style="width: 90px;">收款方式</th>
+                      <th style="width: 60px;">天數</th>
+                      <th style="width: 55px;">瑕疵</th>
+                      <th style="width: 105px;">到期日</th>
+                      <th style="width: 65px;">幣別</th>
+                      <th style="width: 110px;">收款金額</th>
+                      <th style="width: 80px;">繳存狀態</th>
+                      <th style="width: 130px;">處理歷程</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+        `;
+
+        invoices.forEach((inv, idx) => {
+          html += `
+            <tr id="row-${inv.id}">
+              <td class="text-center font-bold">${idx + 1}</td>
+              <td class="text-center font-black ${inv.overdue > 0 ? 'text-red-600' : 'text-slate-600'}">${inv.overdue}</td>
+              <td class="text-center"><span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-md text-xs font-black border border-red-200">${inv.frozenStatus}</span></td>
+              <td class="text-center text-xs font-mono">${inv.frozenDate}</td>
+              <td class="text-center font-mono font-black text-blue-700 text-xs">${inv.id}</td>
+              <td class="text-center">${inv.seq}</td>
+              <td class="text-center font-bold">${inv.method}</td>
+              <td class="text-center">${inv.term}</td>
+              <td class="text-center">☐</td>
+              <td class="text-center font-mono text-xs">${inv.dueDate}</td>
+              <td class="text-center font-black">${inv.curr}</td>
+              <td class="text-right font-black">${inv.amount.toLocaleString()}</td>
+              <td class="text-center font-black ${inv.depositStatus === 'Y' ? 'text-green-600' : 'text-red-600'}">${inv.depositStatus}</td>
+              <td class="text-center">
+                <button type="button" class="btn-func btn-compact text-blue-700 border-blue-300 hover:bg-blue-50" onclick="openHistoryModal('${inv.id}')">
+                  ✏️ 編輯歷程 (<span id="count-${inv.id}">${inv.history.length}</span>)
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+        cardIndex++;
+      }
+
+      container.innerHTML = html;
+    }
+
+    let mgmtCurrentPage = 1;
+    let mgmtPageSize = 10;
+    let currentSelectedMgmtItem = null;
+
+    function renderManagementProgressTable() {
+      const tbody = document.getElementById('management-progress-tbody');
+      const countEl = document.getElementById('mgmt-total-count');
+      const pageEl = document.getElementById('mgmt-current-page');
+      const totalPagesEl = document.getElementById('mgmt-total-pages');
+      const prevBtn = document.getElementById('mgmt-prev-btn');
+      const nextBtn = document.getElementById('mgmt-next-btn');
+      if (!tbody) return;
+
+      const data = appState.managementProgress;
+      const total = data.length;
+      if (countEl) countEl.textContent = total;
+
+      const effectivePageSize = mgmtPageSize === 'all' ? total : parseInt(mgmtPageSize, 10);
+      const totalPages = Math.max(1, Math.ceil(total / effectivePageSize));
+      
+      if (mgmtCurrentPage > totalPages) mgmtCurrentPage = totalPages;
+      if (mgmtCurrentPage < 1) mgmtCurrentPage = 1;
+
+      if (pageEl) pageEl.textContent = mgmtCurrentPage;
+      if (totalPagesEl) totalPagesEl.textContent = totalPages;
+
+      if (prevBtn) prevBtn.disabled = (mgmtCurrentPage <= 1);
+      if (nextBtn) nextBtn.disabled = (mgmtCurrentPage >= totalPages);
+
+      const startIndex = (mgmtCurrentPage - 1) * effectivePageSize;
+      const endIndex = mgmtPageSize === 'all' ? total : Math.min(startIndex + effectivePageSize, total);
+      const pageItems = data.slice(startIndex, endIndex);
+
+      let html = '';
+      pageItems.forEach((item, idx) => {
+        const continuousNo = startIndex + idx + 1;
+        let aiBlock = '';
+
+        if (item.status === 'deleted' || item.deletedInfo) {
+          const dInfo = item.deletedInfo || { time: '2026/08/31 07:24:26', user: '王大明 (E10245)' };
+          aiBlock = `
+            <div class="mt-2 p-2.5 rounded-lg border-2 border-rose-200 bg-rose-50/70 text-xs text-rose-900 space-y-1">
+              <div class="font-black text-rose-700 flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> [AI 提煉摘要已註記刪除]</div>
+              <div class="font-mono text-slate-600">刪除日期/時間：<span class="font-bold text-rose-800">${dInfo.time}</span></div>
+              <div class="text-slate-700 font-semibold">操作人員：<span class="font-bold text-slate-900">${dInfo.user}</span></div>
+            </div>
+          `;
+        } else if (item.aiSummary) {
+          aiBlock = `
+            <div class="mt-2 p-2 bg-blue-50/80 border-l-4 border-blue-500 rounded text-xs text-blue-950 font-medium leading-relaxed">
+              <span class="font-black text-blue-700">[AI 提煉]</span> ${item.aiSummary}
+            </div>
+          `;
+        }
+
+        let statusBadge = '';
+        if (item.status === 'exportable') {
+          statusBadge = `<span class="mt-1.5 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[11px] border border-emerald-300">可轉出</span>`;
+        } else if (item.status === 'non_exportable') {
+          statusBadge = `<span class="mt-1.5 inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-300">不轉出</span>`;
+        } else if (item.status === 'deleted') {
+          statusBadge = `<span class="mt-1.5 inline-block px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[11px] border border-rose-300">已刪除</span>`;
+        }
+
+        html += `
+          <tr>
+            <td class="text-center font-black text-slate-700">${continuousNo}</td>
+            <td class="text-xs md:text-sm">
+              <div class="font-mono font-black text-blue-700">${item.invNo} <span class="text-slate-500 font-normal">/ 項次: ${item.seq}</span></div>
+              <div class="font-bold text-slate-900">${item.customer} / ${item.bgName}</div>
+              <div class="font-black text-slate-800">${item.curr} ${item.amount.toLocaleString()} <span class="text-red-600 text-xs">(逾期 ${item.overdue} 天)</span></div>
+              <div class="text-[11.5px] text-slate-500 font-semibold pt-0.5">業務: ${item.salesName} (${item.salesId}) | 押匯: ${item.negotiator}</div>
+            </td>
+            <td class="text-xs md:text-sm text-slate-900 leading-relaxed">
+              <div>${item.manualNote}</div>
+              ${aiBlock}
+              <div>${statusBadge}</div>
+            </td>
+            <td class="text-center font-mono text-xs text-slate-700 font-bold">${item.syncTime}</td>
+            <td class="text-center">
+              <button type="button" onclick="showToast('📎 正在下載附件: ${item.invNo}_docs.pdf')" class="text-blue-700 hover:text-blue-900 font-bold text-xs flex items-center justify-center gap-1 mx-auto hover:underline">
+                <i class="fa-solid fa-paperclip"></i> 附件 (${item.attachments})
+              </button>
+            </td>
+            <td class="text-center">
+              <button type="button" onclick="openMgmtActionModal('${item.id}')" class="w-8 h-8 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-950 flex items-center justify-center mx-auto shadow-xs" title="操作設定">
+                <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function changeMgmtPageSize(val) {
+      mgmtPageSize = val;
+      mgmtCurrentPage = 1;
+      renderManagementProgressTable();
+    }
+
+    function goToMgmtPage(page) {
+      mgmtCurrentPage = page;
+      renderManagementProgressTable();
+    }
+
+    function openMgmtActionModal(id) {
+      currentSelectedMgmtItem = appState.managementProgress.find(m => m.id === id);
+      if (!currentSelectedMgmtItem) return;
+
+      document.getElementById('mgmt-action-target-desc').textContent = `${currentSelectedMgmtItem.invNo} (項次: ${currentSelectedMgmtItem.seq}) - ${currentSelectedMgmtItem.customer}`;
+      
+      const rads = document.querySelectorAll('input[name="mgmt_status_opt"]');
+      rads.forEach(r => {
+        r.checked = (r.value === currentSelectedMgmtItem.status);
+      });
+
+      document.getElementById('mgmt-action-modal').classList.add('active');
+    }
+
+    function closeMgmtActionModal() {
+      document.getElementById('mgmt-action-modal').classList.remove('active');
+      currentSelectedMgmtItem = null;
+    }
+
+    function saveMgmtActionStatus() {
+      if (!currentSelectedMgmtItem) return;
+      const selectedRadio = document.querySelector('input[name="mgmt_status_opt"]:checked');
+      if (!selectedRadio) return;
+
+      const newStatus = selectedRadio.value;
+      currentSelectedMgmtItem.status = newStatus;
+
+      const today = new Date();
+      const timeStr = `${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')} ${String(today.getHours()).padStart(2,'0')}:${String(today.getMinutes()).padStart(2,'0')}:${String(today.getSeconds()).padStart(2,'0')}`;
+      const userStr = `${appState.user.name} (${appState.user.id})`;
+
+      if (newStatus === 'deleted') {
+        currentSelectedMgmtItem.deletedInfo = { time: timeStr, user: userStr };
+        
+        // 同步回源發票歷史歷程
+        const originInv = appState.invoices.find(i => i.id === currentSelectedMgmtItem.invNo);
+        if (originInv && originInv.history) {
+          originInv.history.forEach(h => {
+            if (h.aiSummary) {
+              h.aiDeletedInfo = { time: timeStr, user: userStr, invNo: currentSelectedMgmtItem.invNo };
+            }
+          });
+        }
+        showToast(`🗑️ 已標註為「刪除」，並於來源歷史及管理進度加註刪除審計資訊！`);
+      } else {
+        currentSelectedMgmtItem.deletedInfo = null;
+        const originInv = appState.invoices.find(i => i.id === currentSelectedMgmtItem.invNo);
+        if (originInv && originInv.history) {
+          originInv.history.forEach(h => {
+            if (h.aiSummary) h.aiDeletedInfo = null;
+          });
+        }
+        showToast(newStatus === 'exportable' ? '✅ 已設定為「可轉出」！' : 'ℹ️ 已設定為「不轉出」！');
+      }
+
+      closeMgmtActionModal();
+      renderManagementProgressTable();
+    }
+
+    let currentExportFormat = 'xlsx';
+
+    function toggleExportMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById('export-dropdown-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    function getEndOfMonthStr(d) {
+      const date = d ? new Date(d) : new Date();
+      const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      const yyyy = lastDay.getFullYear();
+      const mm = String(lastDay.getMonth() + 1).padStart(2, '0');
+      const dd = String(lastDay.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function openExportModal(format) {
+      currentExportFormat = format;
+      const menu = document.getElementById('export-dropdown-menu');
+      if (menu) menu.classList.add('hidden');
+
+      setExportFormat(format);
+
+      // 日期區間迄日預設當月底日期
+      const eomStr = getEndOfMonthStr(appState.baseDate);
+      document.querySelectorAll('.auto-end-of-month-input').forEach(input => {
+        input.value = eomStr;
+      });
+
+      updateExpFilterLabels();
+      refreshExportPreviewData();
+      document.getElementById('export-filter-modal').classList.add('active');
+    }
+
+    function closeExportModal() {
+      document.getElementById('export-filter-modal').classList.remove('active');
+    }
+
+    function setExportFormat(fmt) {
+      currentExportFormat = fmt;
+      const btnXlsx = document.getElementById('exp-fmt-btn-xlsx');
+      const btnPdf = document.getElementById('exp-fmt-btn-pdf');
+      if (fmt === 'xlsx') {
+        btnXlsx.className = 'px-3 py-1 rounded-lg bg-blue-600 text-white shadow-xs';
+        btnPdf.className = 'px-3 py-1 rounded-lg text-slate-700 hover:text-slate-950';
+      } else {
+        btnPdf.className = 'px-3 py-1 rounded-lg bg-blue-600 text-white shadow-xs';
+        btnXlsx.className = 'px-3 py-1 rounded-lg text-slate-700 hover:text-slate-950';
+      }
+    }
+
+    function toggleAllExpOptions(cbClass, state) {
+      document.querySelectorAll(`.${cbClass}`).forEach(cb => { cb.checked = state; });
+      updateExpFilterLabels();
+    }
+
+    function updateExpFilterLabels() {
+      const sellers = Array.from(document.querySelectorAll('.exp-seller-cb:checked')).map(cb => cb.value);
+      const sAll = document.querySelectorAll('.exp-seller-cb');
+      document.getElementById('exp-seller-label').textContent = sellers.length === 0 ? '未選取' : (sellers.length === sAll.length ? `全 (${sAll.length})` : (sellers.length === 1 ? sellers[0] : `已選 ${sellers.length} 個`));
+
+      const exporters = Array.from(document.querySelectorAll('.exp-exporter-cb:checked')).map(cb => cb.value);
+      document.getElementById('exp-exporter-label').textContent = exporters.length > 0 ? exporters[0] : '未選取';
+
+      const bgs = Array.from(document.querySelectorAll('.exp-bg-cb:checked'));
+      const bgAll = document.querySelectorAll('.exp-bg-cb');
+      document.getElementById('exp-bg-label').textContent = bgs.length === 0 ? '未選取' : (bgs.length === bgAll.length ? `全 (${bgAll.length})` : (bgs.length === 1 ? bgs[0].getAttribute('data-name') : `已選 ${bgs.length} 個`));
+
+      const warehouses = Array.from(document.querySelectorAll('.exp-warehouse-cb:checked')).map(cb => cb.value);
+      const wAll = document.querySelectorAll('.exp-warehouse-cb');
+      document.getElementById('exp-warehouse-label').textContent = warehouses.length === 0 ? '未選取' : (warehouses.length === wAll.length ? `全 (${wAll.length})` : (warehouses.length === 1 ? warehouses[0] : `已選 ${warehouses.length} 個`));
+
+      const personnel = Array.from(document.querySelectorAll('.exp-personnel-cb:checked'));
+      const pAll = document.querySelectorAll('.exp-personnel-cb');
+      document.getElementById('exp-personnel-label').textContent = personnel.length === 0 ? '未選取' : (personnel.length === pAll.length ? `全 (${pAll.length})` : `已選 ${personnel.length} 人`);
+
+      refreshExportPreviewData();
+    }
+
+    function refreshExportPreviewData() {
+      const tbody = document.getElementById('export-preview-tbody');
+      const countEl = document.getElementById('export-preview-count');
+      if (!tbody) return;
+
+      const selectedSellers = Array.from(document.querySelectorAll('.exp-seller-cb:checked')).map(cb => cb.value);
+      const selectedExporters = Array.from(document.querySelectorAll('.exp-exporter-cb:checked')).map(cb => cb.value);
+      const selectedBgs = Array.from(document.querySelectorAll('.exp-bg-cb:checked')).map(cb => cb.value);
+      const selectedWarehouses = Array.from(document.querySelectorAll('.exp-warehouse-cb:checked')).map(cb => cb.value);
+      const selectedPersonnelCbs = Array.from(document.querySelectorAll('.exp-personnel-cb:checked'));
+      const selectedPersonnelValues = selectedPersonnelCbs.map(cb => cb.value);
+      const selectedPersonnelNames = selectedPersonnelCbs.map(cb => cb.getAttribute('data-name'));
+
+      const filtered = appState.managementProgress.filter(item => {
+        const matchSeller = selectedSellers.length === 0 || selectedSellers.includes(item.seller);
+        const matchExporter = selectedExporters.length === 0 || selectedExporters.includes(item.exporter);
+        const matchBg = selectedBgs.length === 0 || selectedBgs.includes(item.bg);
+        const matchWarehouse = selectedWarehouses.length === 0 || selectedWarehouses.includes(item.warehouse);
+        const matchPerson = selectedPersonnelValues.length === 0 || 
+          selectedPersonnelValues.includes(item.salesId) || 
+          selectedPersonnelNames.some(name => item.salesName.includes(name) || item.negotiator.includes(name));
+        return matchSeller && matchExporter && matchBg && matchWarehouse && matchPerson;
+      });
+
+      if (countEl) countEl.textContent = filtered.length;
+
+      let html = '';
+      filtered.forEach((item, idx) => {
+        const fullNote = item.manualNote + (item.aiSummary ? `\n[AI 提煉] ${item.aiSummary}` : '');
+        html += `
+          <tr>
+            <td class="text-center font-bold">${idx + 1}</td>
+            <td class="font-mono font-bold text-blue-700">${item.invNo}</td>
+            <td class="text-center">${item.seq}</td>
+            <td class="font-bold text-slate-800">${item.customer}</td>
+            <td class="text-center"><span class="cust-badge-pill">${item.bgName}</span></td>
+            <td class="text-right font-black">${item.amount.toLocaleString()}</td>
+            <td class="text-center font-bold">${item.curr}</td>
+            <td class="text-center font-black text-red-600">${item.overdue}</td>
+            <td class="text-slate-800 font-bold">${item.salesName} (${item.salesId})</td>
+            <td class="text-slate-700">${item.negotiator}</td>
+            <td class="text-xs text-slate-800 leading-relaxed">${fullNote}</td>
+            <td class="text-center font-mono text-xs text-slate-600">${item.syncTime}</td>
+            <td class="text-center">
+              <span class="px-2 py-0.5 rounded text-xs font-bold ${item.status === 'exportable' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-700'}">
+                ${item.status === 'exportable' ? '可轉出' : '不轉出'}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html || `<tr><td colspan="13" class="text-center p-6 text-slate-400 font-bold">無符合篩選條件的資料</td></tr>`;
+    }
+
+    function executeExportDownload() {
+      const count = document.getElementById('export-preview-count')?.textContent || '0';
+      if (count === '0') {
+        showToast('⚠️ 目前無符合條件之資料可供轉出！');
+        return;
+      }
+
+      closeExportModal();
+
+      if (currentExportFormat === 'xlsx') {
+        const csvContent = "\uFEFF" + "NO,發票號碼,項次,客戶名稱,事業群,收款金額,幣別,逾期天數,責任業務,押匯人員,處理進度說明,轉入正式時間,轉出狀態\n" +
+          appState.managementProgress.map((item, idx) => {
+            const noteClean = `"${(item.manualNote + (item.aiSummary ? ' [AI]' + item.aiSummary : '')).replace(/"/g, '""')}"`;
+            return `${idx + 1},${item.invNo},${item.seq},"${item.customer}",${item.bgName},${item.amount},${item.curr},${item.overdue},"${item.salesName}","${item.negotiator}",${noteClean},"${item.syncTime}",${item.status}`;
+          }).join("\n");
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `AR_Management_Progress_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(`📥 成功轉出 Excel 檔案 (共 ${count} 筆資料)！`);
+      } else {
+        window.print();
+        showToast(`📄 已開啟 PDF 格式列印與預覽對話框！`);
+      }
+    }
+
+    let currentEditingInvId = null;
+
+    function openHistoryModal(invNo) {
+      currentEditingInvId = invNo;
+      const inv = appState.getProcessedInvoices().find(i => i.id === invNo);
+      if (!inv) return;
+
+      document.getElementById('modal-inv-id-title').textContent = inv.id;
+      
+      const summaryTbody = document.getElementById('modal-invoice-summary-tbody');
+      summaryTbody.innerHTML = `
+        <tr>
+          <td class="text-center font-bold">1</td>
+          <td class="text-center font-black text-red-600">${inv.overdue}</td>
+          <td class="text-center"><span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-black border border-red-200">${inv.frozenStatus}</span></td>
+          <td class="text-center font-mono text-xs">${inv.frozenDate}</td>
+          <td class="text-center font-mono font-black text-blue-700 text-xs">${inv.id}</td>
+          <td class="text-center">${inv.seq}</td>
+          <td class="text-center font-bold">${inv.method}</td>
+          <td class="text-center">${inv.term}</td>
+          <td class="text-center">☐</td>
+          <td class="text-center font-mono text-xs">${inv.dueDate}</td>
+          <td class="text-center font-black">${inv.curr}</td>
+          <td class="text-right font-black">${inv.amount.toLocaleString()}</td>
+          <td class="text-center font-black ${inv.depositStatus === 'Y' ? 'text-green-600' : 'text-red-600'}">${inv.depositStatus}</td>
+        </tr>
+      `;
+
+      const tbody = document.getElementById('modal-history-table-body');
+      let rowsHtml = '';
+      if (!inv.history || inv.history.length === 0) {
+        rowsHtml = `<tr><td colspan="7" class="text-center p-6 text-slate-400 font-bold text-xs">目前尚無處理歷程紀錄。</td></tr>`;
+      } else {
+        inv.history.forEach((h, idx) => {
+          let aiSection = '';
+          if (h.aiSummary) {
+            if (h.aiDeletedInfo) {
+              aiSection = `
+                <div class="ml-6 mt-2 p-2 bg-rose-50 border-l-4 border-rose-500 rounded text-xs text-rose-950 flex items-center justify-between gap-2 shadow-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="line-through text-slate-400 font-semibold">[AI 提煉] ${h.aiSummary}</span>
+                  </div>
+                  <button type="button" onclick="showDeleteAuditModal('${inv.id}', '${h.aiDeletedInfo.time}', '${h.aiDeletedInfo.user}')" class="px-2 py-0.5 bg-rose-200 hover:bg-rose-300 text-rose-950 border border-rose-300 rounded font-black text-xs flex items-center gap-1 shadow-xs whitespace-nowrap" title="查看刪除註記">
+                    <i class="fa-solid fa-trash-can text-rose-700"></i> 已刪除註記
+                  </button>
+                </div>
+              `;
+            } else {
+              aiSection = `
+                <div class="ml-6 mt-2 p-2 bg-blue-50 border-l-4 border-blue-500 rounded text-xs text-blue-950 space-y-1 shadow-inner flex items-start gap-2.5">
+                  <input type="checkbox" class="history-select-cb h-4 w-4 mt-0.5 rounded border-blue-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0" checked>
+                  <div class="flex-1 space-y-0.5">
+                    <div class="font-black flex items-center gap-1 text-blue-700"><i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i> AI 提煉摘要：</div>
+                    <div class="leading-relaxed font-semibold">${h.aiSummary}</div>
+                  </div>
+                </div>
+              `;
+            }
+          }
+
+          rowsHtml += `
+            <tr>
+              <td class="text-center font-black text-slate-600">${inv.history.length - idx}</td>
+              <td>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-2.5">
+                    <input type="checkbox" class="history-select-cb h-4 w-4 mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0" checked>
+                    <textarea rows="2" class="w-full p-2 border border-slate-300 rounded-lg text-xs md:text-sm text-slate-900 bg-white focus:outline-none focus:border-blue-500 leading-relaxed font-semibold">${h.text}</textarea>
+                  </div>
+                  ${aiSection}
+                </div>
+              </td>
+              <td class="text-center text-xs font-bold text-slate-700">${h.unit || appState.user.unit}</td>
+              <td class="text-center text-xs font-bold text-slate-700">${h.sales || '業務 王大明'}</td>
+              <td class="text-center text-xs text-slate-500 font-mono">${h.time}</td>
+              <td class="text-center">
+                <button type="button" onclick="showToast('📎 正在檢視附件檔案...')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-xs text-blue-700 font-bold flex items-center justify-center gap-1 mx-auto shadow-xs">
+                  <i class="fa-solid fa-paperclip text-xs"></i> 附件 (${h.attachments || 1})
+                </button>
+              </td>
+              <td class="text-center">
+                <button type="button" class="text-red-500 hover:text-red-700 p-1" title="刪除此筆紀錄" onclick="deleteHistoryItem('${inv.id}', '${idx}')">
+                  <i class="fa-solid fa-trash-can text-sm"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      tbody.innerHTML = rowsHtml;
+      document.getElementById('history-editor-modal').classList.add('active');
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('history-editor-modal').classList.remove('active');
+      currentEditingInvId = null;
+    }
+
+    function saveInvoiceHistory() {
+      showToast(`✅ 發票 ${currentEditingInvId} 之勾選歷程已成功轉入正式！`);
+      closeHistoryModal();
+      renderCustomerCards();
+      renderManagementProgressTable();
+    }
+
+    function deleteHistoryItem(invId, historyIndex) {
+      const inv = appState.invoices.find(i => i.id === invId);
+      if (inv && inv.history) {
+        inv.history.splice(historyIndex, 1);
+        openHistoryModal(invId);
+        const countSpan = document.getElementById(`count-${invId}`);
+        if (countSpan) countSpan.textContent = inv.history.length;
+        showToast('🗑️ 已刪除該筆歷程說明紀錄');
+      }
+    }
+
+    function showDeleteAuditModal(invNo, time, user) {
+      document.getElementById('audit-inv-no').textContent = invNo;
+      document.getElementById('audit-del-time').textContent = time;
+      document.getElementById('audit-del-user').textContent = user;
+      document.getElementById('delete-audit-modal').classList.add('active');
+    }
+
+    function closeDeleteAuditModal() {
+      document.getElementById('delete-audit-modal').classList.remove('active');
+    }
+
+    function openBatchModal() {
+      const modal = document.getElementById('batch-modal');
+      if (modal) {
+        modal.classList.add('active');
+        renderBatchTable();
+        renderPresetCheckboxes();
+        renderBatchFileBadges();
+      }
+    }
+
+    function closeBatchModal() {
+      const modal = document.getElementById('batch-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function renderPresetCheckboxes() {
+      const container = document.getElementById('batch-preset-container');
+      if (!container) return;
+      let html = '';
+      appState.presets.forEach(p => {
+        html += `
+          <label class="p-2.5 border border-slate-200 rounded-xl hover:bg-blue-50/50 flex items-center gap-3 cursor-pointer bg-white text-xs md:text-sm font-bold text-slate-800 shadow-xs transition-colors">
+            <input type="checkbox" class="batch-preset-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="${p}" onchange="updateBatchRichEditorFromPresets()">
+            <span>${p}</span>
+          </label>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function openPresetEditorModal() {
+      const listEl = document.getElementById('preset-editor-list');
+      if (!listEl) return;
+      let html = '';
+      appState.presets.forEach((p, idx) => {
+        html += `
+          <div class="flex items-center gap-2">
+            <input type="text" value="${p}" class="flex-1 p-2 border border-slate-300 rounded-lg text-xs md:text-sm font-semibold focus:outline-none focus:border-blue-500" onchange="appState.presets[${idx}] = this.value">
+            <button type="button" class="text-red-500 hover:text-red-700 px-2" onclick="appState.presets.splice(${idx}, 1); openPresetEditorModal(); renderPresetCheckboxes();"><i class="fa-solid fa-trash-can text-sm"></i></button>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
+      document.getElementById('preset-editor-modal').classList.add('active');
+    }
+
+    function closePresetEditorModal() {
+      document.getElementById('preset-editor-modal').classList.remove('active');
+      renderPresetCheckboxes();
+      showToast('✅ 常用說明已成功更新！');
+    }
+
+    function addNewPresetItem() {
+      const input = document.getElementById('new-preset-input');
+      if (input && input.value.trim()) {
+        appState.presets.push(input.value.trim());
+        input.value = '';
+        openPresetEditorModal();
+      }
+    }
+
+    function handleBatchFileUpload(input) {
+      if (input.files) {
+        Array.from(input.files).forEach(file => {
+          appState.uploadedFiles.push({ name: file.name, size: (file.size / 1024).toFixed(1) + ' KB' });
+        });
+        renderBatchFileBadges();
+        showToast('📎 附件上傳成功！');
+      }
+    }
+
+    function renderBatchFileBadges() {
+      const container = document.getElementById('batchFileBadges');
+      if (!container) return;
+      if (appState.uploadedFiles.length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-400 italic">尚未選擇任何附加檔案 (點擊上方按鈕上傳水單或證明檔案)</span>`;
+        return;
+      }
+      let html = '';
+      appState.uploadedFiles.forEach((file, idx) => {
+        html += `
+          <div class="inline-flex items-center gap-2 px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-xs font-bold text-blue-900 shadow-xs">
+            <i class="fa-solid fa-file-arrow-down text-blue-600"></i>
+            <span>${file.name} (${file.size})</span>
+            <button type="button" onclick="showToast('📥 正在下載檔案: ${file.name}')" class="text-blue-600 hover:text-blue-800 ml-1" title="下載"><i class="fa-solid fa-download text-xs"></i></button>
+            <button type="button" onclick="appState.uploadedFiles.splice(${idx}, 1); renderBatchFileBadges();" class="text-red-500 hover:text-red-700 ml-1" title="刪除"><i class="fa-solid fa-xmark text-xs"></i></button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderBatchTable() {
+      const tbody = document.getElementById('batch-table-tbody');
+      if (!tbody) return;
+      const userOnlyChecked = document.getElementById('logged-user-only-cb')?.checked;
+      const searchKeyword = document.getElementById('batch-inv-search-input')?.value.toLowerCase() || '';
+
+      const processed = appState.getProcessedInvoices();
+      const filtered = processed.filter(inv => {
+        const matchUser = !userOnlyChecked || inv.salesId === appState.user.id;
+        const matchSearch = !searchKeyword || 
+          inv.id.toLowerCase().includes(searchKeyword) ||
+          inv.customer.toLowerCase().includes(searchKeyword) ||
+          inv.salesName.toLowerCase().includes(searchKeyword) ||
+          inv.bgName.toLowerCase().includes(searchKeyword);
+        return matchUser && matchSearch;
+      });
+
+      let html = '';
+      filtered.forEach((inv, idx) => {
+        html += `
+          <tr>
+            <td class="text-center"><input type="checkbox" class="batch-row-cb h-4 w-4 rounded border-slate-300 text-blue-600" value="${inv.id}" checked></td>
+            <td class="text-center font-bold">${idx + 1}</td>
+            <td class="text-center font-black text-blue-800 bg-blue-50">${inv.overdue}</td>
+            <td class="text-center font-bold">${inv.salesName}</td>
+            <td class="text-center">${inv.bgName}</td>
+            <td class="font-bold text-slate-800">${inv.customer}</td>
+            <td class="text-center font-mono font-black text-blue-600 text-xs">${inv.id}</td>
+            <td class="text-center">${inv.seq}</td>
+            <td class="text-center">${inv.method}</td>
+            <td class="text-center font-black">${inv.curr}</td>
+            <td class="text-right font-black">${inv.amount.toLocaleString()}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function selectAllBatchInvoices(state) {
+      document.querySelectorAll('.batch-row-cb').forEach(cb => cb.checked = state);
+    }
+
+    function updateBatchRichEditorFromPresets() {
+      const editor = document.getElementById('batch-rich-editor');
+      const checkedPresets = Array.from(document.querySelectorAll('.batch-preset-cb:checked')).map(cb => cb.value);
+      if (editor) {
+        editor.innerHTML = checkedPresets.map(p => `<div>${p}</div>`).join('');
+      }
+    }
+
+    function execEditorCommand(command) {
+      document.execCommand(command, false, null);
+    }
+
+    function extractAiForBatchModal() {
+      const editor = document.getElementById('batch-rich-editor');
+      if (editor) {
+        editor.innerHTML += `<div class="text-blue-700 mt-2 font-black">✨ [AI 提煉] 客戶承諾將於本週內完成匯款並提供水單。</div>`;
+        showToast('✨ AI 摘要已成功提煉並加入編輯器！');
+      }
+    }
+
+    function applyBatchContentAndSyncFormal() {
+      const checkedRows = document.querySelectorAll('.batch-row-cb:checked');
+      if (checkedRows.length === 0) {
+        showToast('⚠️ 請至少勾選一筆發票資料！');
+        return;
+      }
+      showToast(`✅ 成功批次套用說明至 ${checkedRows.length} 筆發票！`);
+      closeBatchModal();
+    }
+
+    function openPromptModal() {
+      document.getElementById('prompt-modal').classList.add('active');
+    }
+
+    function closePromptModal() {
+      document.getElementById('prompt-modal').classList.remove('active');
+    }
+
+    function switchUserRole(role) {
+      currentRole = role;
+      const summarySection = document.getElementById('admin-summary-section');
+      if (role === 'admin') {
+        if (summarySection) summarySection.style.display = 'block';
+      } else {
+        if (summarySection) summarySection.style.display = 'none';
+      }
+    }
+
+    function toggleCardAccordion(bodyId, iconId) {
+      const body = document.getElementById(bodyId);
+      const icon = document.getElementById(iconId);
+      if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        if (icon) icon.textContent = '▲ 折疊明細';
+      } else {
+        body.classList.add('hidden');
+        if (icon) icon.textContent = '▼ 展開明細';
+      }
+    }
+
+    function expandAllCards() {
+      document.querySelectorAll('.customer-accordion-card > div[id^="cust-body-"]').forEach(b => b.classList.remove('hidden'));
+      document.querySelectorAll('.customer-accordion-card span[id^="cust-icon-"]').forEach(ic => ic.textContent = '▲ 折疊明細');
+    }
+
+    function collapseAllCards() {
+      document.querySelectorAll('.customer-accordion-card > div[id^="cust-body-"]').forEach(b => b.classList.add('hidden'));
+      document.querySelectorAll('.customer-accordion-card span[id^="cust-icon-"]').forEach(ic => ic.textContent = '▼ 展開明細');
+    }
+
+    function renderAbnormalNotices() {
+      const tbody = document.getElementById('abnormal-notice-tbody');
+      const card = document.getElementById('abnormal-notice-card');
+      if (!tbody) return;
+
+      let html = '';
+      appState.abnormalNotices.forEach((item, idx) => {
+        html += `
+          <tr>
+            <td class="text-center font-black text-rose-700">${idx + 1}</td>
+            <td class="text-center font-black text-slate-800">${item.seller}</td>
+            <td class="text-center font-bold text-slate-700">${item.exporter}</td>
+            <td class="text-center"><span class="cust-badge-pill bg-rose-50 text-rose-800 border-rose-200">${item.bgName}</span></td>
+            <td class="text-xs font-black text-rose-900 bg-rose-50/50 p-2 rounded">${item.unSentRegions}</td>
+            <td class="text-center text-xs font-bold text-blue-900">${item.warehouse}</td>
+            <td class="text-xs font-black text-slate-900">${item.operator}</td>
+            <td class="text-xs text-rose-700 font-bold">${item.reason}</td>
+            <td class="text-center">
+              <button type="button" class="btn-func btn-compact text-rose-700 border-rose-300 hover:bg-rose-100 font-bold" onclick="showToast('🚀 正在補發 ${item.seller}/${item.bgName} 之未寄出地區郵件...')">
+                <i class="fa-solid fa-paper-plane text-xs"></i> 補發
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function renderEmailLogsTable() {
+      const container = document.getElementById('email-group-cards-container');
+      if (!container) return;
+
+      const grouped = {};
+      appState.emailLogs.forEach(log => {
+        const groupKey = `${log.seller}__${log.exporter}__${log.bgName}`;
+        if (!grouped[groupKey]) grouped[groupKey] = [];
+        grouped[groupKey].push(log);
+      });
+
+      const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+      let cardsHtml = '';
+      let cardIdx = 1;
+
+      for (const [key, logs] of Object.entries(grouped)) {
+        const [seller, exporter, bgName] = key.split('__');
+        cardsHtml += `
+          <div class="customer-accordion-card">
+            <div class="customer-accordion-header bg-slate-50" onclick="toggleCardAccordion('email-card-body-${cardIdx}', 'email-card-icon-${cardIdx}')">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <span class="cust-badge-pill bg-white">賣方: ${seller}</span>
+                <span class="cust-badge-pill bg-white">出口商: ${exporter}</span>
+                <span class="cust-badge-pill bg-white">事業群: ${bgName}</span>
+                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-950 text-xs font-black border border-blue-200">
+                  2026 年迄今，共 ${logs.length} 筆發信紀錄
+                </span>
+              </div>
+              <span class="text-xs font-black text-blue-700 hover:underline" id="email-card-icon-${cardIdx}">▲ 折疊清單</span>
+            </div>
+
+            <div id="email-card-body-${cardIdx}" class="p-4">
+              <div class="overflow-x-auto">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 45px;">NO</th>
+                      <th style="width: 80px;">賣方</th>
+                      <th style="width: 80px;">出口商</th>
+                      <th style="width: 90px;">事業群</th>
+                      <th style="width: 90px;">目的地區別</th>
+                      <th style="width: 90px;">國外倉類別</th>
+                      <th style="width: 190px;" class="text-left font-black">Email 通知日期 / 時間 / 星期</th>
+                      <th style="width: 150px;" class="text-left font-black">寄件人員</th>
+                      <th class="text-left font-black">附加檔案</th>
+                      <th style="width: 80px;">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+        `;
+
+        logs.forEach((log, idx) => {
+          const d = log.sendTimestamp;
+          const formattedDate = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+          const formattedTime = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+          const formattedWeek = `(星期${dayNames[d.getDay()]})`;
+
+          cardsHtml += `
+            <tr>
+              <td class="text-center font-bold text-slate-600">${idx + 1}</td>
+              <td class="text-center font-bold text-slate-800">${log.seller}</td>
+              <td class="text-center font-semibold text-slate-700">${log.exporter}</td>
+              <td class="text-center"><span class="cust-badge-pill">${log.bgName}</span></td>
+              <td class="text-center font-bold text-blue-700 text-xs">${log.region || 'ALL'}</td>
+              <td class="text-center font-bold text-blue-900 text-xs">${log.warehouse || '非國外倉'}</td>
+              <td class="font-mono text-xs text-blue-950 font-bold bg-blue-50/20 leading-relaxed">
+                <div>${formattedDate} ${formattedTime}</div>
+                <div class="text-slate-600 font-medium text-[11.5px]">${formattedWeek}</div>
+              </td>
+              <td class="text-xs font-bold text-blue-700">${log.sender}</td>
+              <td class="text-xs font-bold text-slate-800">
+                <a href="javascript:void(0)" onclick="showToast('📥 正在下載附加檔案: ${log.attachment}')" class="text-blue-600 hover:underline flex items-center gap-1.5">
+                  <i class="fa-solid fa-file-excel text-emerald-600"></i> ${log.attachment}
+                </a>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn-func btn-compact text-blue-700 border-blue-200 hover:bg-blue-50" onclick="showToast('檢視郵件內容：${log.id}')">
+                  <i class="fa-solid fa-eye text-xs"></i> 檢視
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+
+        cardsHtml += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+        cardIdx++;
+      }
+
+      container.innerHTML = cardsHtml;
+    }
+
+    function refreshEmailLogs() {
+      renderEmailLogsTable();
+      renderAbnormalNotices();
+      showToast('✅ Email 通知歷程已更新至最新狀態！');
+    }
+
+    function openTemplateEditorModal() {
+      showToast('✏️ 已開啟 Email 通知內文編輯視窗！');
+    }
+
+    function openSendConfirmModal() {
+      openExportModal('xlsx');
+    }
+
+    window.onload = function() {
+      initUserFontSize();
+      initBaseDate();
+      bindAllFilterEvents();
+      updateFilterLabels();
+      renderCustomerCards();
+      renderManagementProgressTable();
+      renderEmailLogsTable();
+      renderAbnormalNotices();
+      const defaultTabBtn = document.getElementById('tab-btn-16_plus');
+      if (defaultTabBtn) switchTab('16_plus', defaultTabBtn);
+    };
+  </script>
+</body>
+</html>
