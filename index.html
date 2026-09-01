@@ -128,6 +128,7 @@
     <!-- 2. MAIN CONTENT AREA -->
     <main class="flex-1 flex flex-col min-w-0 bg-slate-100 overflow-hidden">
       
+      <!-- Top Navigation Header -->
       <header class="bg-white border-b border-slate-200 px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-sm z-20">
         <div class="flex items-center flex-wrap gap-2">
           <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold shadow-xs">
@@ -182,10 +183,17 @@
               </h2>
             </div>
             
-            <div class="flex items-center flex-wrap gap-2">
-              <button onclick="refreshData()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-black transition shadow-xs">
+            <div class="flex items-center flex-wrap gap-2.5">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs font-bold shadow-2xs">
+                <i class="fa-regular fa-clock text-blue-600"></i>
+                <span>最新更新：</span>
+                <strong id="arLastUpdateTimestamp" class="text-blue-700 font-black">2026/09/01 13:03:27</strong>
+              </div>
+
+              <button onclick="refreshData()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-black transition shadow-xs active:scale-98">
                 <i class="fa-solid fa-arrows-rotate text-blue-600"></i> 更新最新 AR 明細
               </button>
+              
               <button onclick="openBatchModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black transition shadow-md active:scale-98">
                 <i class="fa-solid fa-bolt text-yellow-300"></i> 批次說明作業
               </button>
@@ -197,7 +205,7 @@
             <div class="flex items-center gap-2 p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300 shadow-inner">
               <button onclick="switchTab('tab1')" id="tabBtn-tab1" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-black transition shadow-sm bg-rose-600 text-white border border-rose-700 ring-2 ring-rose-300">
                 <span>🚨 逾期 ≧ 16 天</span>
-                <span id="tab1-badge" class="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-black">2</span>
+                <span id="tab1-badge" class="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-black">4</span>
               </button>
               <button onclick="switchTab('tab2')" id="tabBtn-tab2" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-black transition text-slate-700 hover:bg-slate-100 border border-transparent">
                 <span>⚠️ 1 ≦ 逾期 ≦ 15 天</span>
@@ -337,8 +345,10 @@
             </div>
           </div>
 
-          <!-- 2. Weekly AR Email Notification History Table -->
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+          <!-- 2. Weekly AR Email Notification History Table (Grouped Cards, Default Collapsed, Sorted Descending) -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4 relative">
+            
+            <!-- Top Header & Action Controls -->
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div class="flex items-center gap-2">
                 <span class="text-xl">📊</span>
@@ -348,48 +358,94 @@
                 </div>
               </div>
               
-              <div class="flex items-center gap-2">
+              <!-- Required Button Order: Template Edit -> Refresh -> Manual Send -->
+              <div class="flex items-center flex-wrap gap-2.5">
                 <button onclick="openEmailTemplateModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-800 text-xs font-black shadow-xs transition active:scale-98">
                   <i class="fa-solid fa-file-pen text-blue-600"></i> Email通知內文編輯
                 </button>
-                <button onclick="refreshEmailHistory()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-black shadow-xs transition">
+
+                <button onclick="refreshEmailHistory()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-black shadow-xs transition active:scale-98">
                   <i class="fa-solid fa-arrows-rotate text-blue-600"></i> 重新整理
                 </button>
-                <!-- Fully Functional Manual Send Button -->
+
                 <button onclick="openManualSendModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black shadow-md transition active:scale-98">
-                  <i class="fa-solid fa-paper-plane"></i> 手動觸發 Email 寄出
+                  <i class="fa-solid fa-paper-plane"></i> 🚀 手動觸發 Email 寄出
                 </button>
               </div>
             </div>
 
-            <!-- Email Badges Row (Filter Condition Indicators) -->
-            <div class="flex items-center flex-wrap gap-2 text-xs font-bold text-slate-600">
-              <span id="emailBadgeSeller" class="px-2.5 py-1 bg-slate-100 rounded-lg border border-slate-200">賣方：FENC</span>
-              <span id="emailBadgeExporter" class="px-2.5 py-1 bg-slate-100 rounded-lg border border-slate-200">出口商：FENC</span>
-              <span id="emailBadgeBg" class="px-2.5 py-1 bg-slate-100 rounded-lg border border-slate-200">事業群：固聚酯粒</span>
-              <span id="emailHistoryTotalBadge" class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 font-black">2026 迄今，共 2 筆發信紀錄</span>
+            <!-- Multi-Select Dropdowns Filter Bar + Dynamic Year Badges + Top-Right Aligned Timestamp -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div class="flex items-center flex-wrap gap-2 text-xs font-bold text-slate-700">
+                
+                <!-- 1. 賣方 Multi-Select Dropdown -->
+                <div class="relative">
+                  <button type="button" onclick="toggleMultiDropdown('em-seller-menu')" id="em-seller-btn" class="h-9 px-3 bg-white border border-slate-300 rounded-xl text-xs font-black text-left flex items-center justify-between shadow-2xs hover:bg-slate-50">
+                    <span id="em-seller-label">賣方：全部</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2"></i>
+                  </button>
+                  <div id="em-seller-menu" class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-3 z-30 space-y-2">
+                    <div class="flex items-center justify-between border-b pb-1 text-xs font-bold text-slate-500">
+                      <span>賣方清單</span>
+                      <button type="button" onclick="toggleAllCheckboxes('em-seller-cb', true); onEmailFilterChange();" class="text-blue-600 hover:underline">全選</button>
+                    </div>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-seller-cb" value="FENC" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FENC (遠東新世紀)</label>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-seller-cb" value="OIHN" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> OIHN</label>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-seller-cb" value="FNIS" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FNIS</label>
+                  </div>
+                </div>
+
+                <!-- 2. 出口商 Multi-Select Dropdown -->
+                <div class="relative">
+                  <button type="button" onclick="toggleMultiDropdown('em-exp-menu')" id="em-exp-btn" class="h-9 px-3 bg-white border border-slate-300 rounded-xl text-xs font-black text-left flex items-center justify-between shadow-2xs hover:bg-slate-50">
+                    <span id="em-exp-label">出口商：全部</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2"></i>
+                  </button>
+                  <div id="em-exp-menu" class="hidden absolute left-0 top-full mt-1.5 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl p-3 z-30 space-y-2">
+                    <div class="flex items-center justify-between border-b pb-1 text-xs font-bold text-slate-500">
+                      <span>出口商清單</span>
+                      <button type="button" onclick="toggleAllCheckboxes('em-exp-cb', true); onEmailFilterChange();" class="text-blue-600 hover:underline">全選</button>
+                    </div>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-exp-cb" value="FENC" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FENC (遠東新世紀)</label>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-exp-cb" value="FEAV" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FEAV (遠東服裝)</label>
+                  </div>
+                </div>
+
+                <!-- 3. 事業群 Multi-Select Dropdown -->
+                <div class="relative">
+                  <button type="button" onclick="toggleMultiDropdown('em-bg-menu')" id="em-bg-btn" class="h-9 px-3 bg-white border border-slate-300 rounded-xl text-xs font-black text-left flex items-center justify-between shadow-2xs hover:bg-slate-50">
+                    <span id="em-bg-label">事業群：全部</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2"></i>
+                  </button>
+                  <div id="em-bg-menu" class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-3 z-30 space-y-2">
+                    <div class="flex items-center justify-between border-b pb-1 text-xs font-bold text-slate-500">
+                      <span>事業群清單</span>
+                      <button type="button" onclick="toggleAllCheckboxes('em-bg-cb', true); onEmailFilterChange();" class="text-blue-600 hover:underline">全選</button>
+                    </div>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-bg-cb" value="固聚酯粒" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> 固聚酯粒</label>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-bg-cb" value="短纖" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> 短纖</label>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-bg-cb" value="成衣" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> 成衣</label>
+                  </div>
+                </div>
+
+                <!-- 4. Dynamic Year-by-Year Count Badges (e.g. 2026 迄今，共 4 筆 / 2025 迄今，共 1 筆) -->
+                <div id="emailYearStatsBadges" class="flex items-center flex-wrap gap-2">
+                  <!-- Injected via JavaScript -->
+                </div>
+
+              </div>
+
+              <!-- Top-Right Corner Timestamp Badge -->
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs font-bold shadow-2xs">
+                <i class="fa-regular fa-clock text-blue-600"></i>
+                <span>最新整理：</span>
+                <strong id="emailLastRefreshTimestamp" class="text-blue-700 font-black">2026/09/01 13:25:30</strong>
+              </div>
             </div>
 
-            <div class="overflow-x-auto border border-slate-200 rounded-xl">
-              <table class="w-full text-left text-xs border-collapse">
-                <thead class="bg-slate-50 text-slate-700 font-black border-b border-slate-200">
-                  <tr>
-                    <th class="p-3 text-center w-12">NO</th>
-                    <th class="p-3 w-20">賣方</th>
-                    <th class="p-3 w-20">出口商</th>
-                    <th class="p-3 w-28 text-center">事業群</th>
-                    <th class="p-3 w-32">目的地區別</th>
-                    <th class="p-3 w-28">國外倉類別</th>
-                    <th class="p-3 w-48">Email 通知日期 / 時間 / 星期</th>
-                    <th class="p-3 w-36">寄件人員</th>
-                    <th class="p-3 w-44 text-center">附加檔案</th>
-                    <th class="p-3 text-center w-24">操作</th>
-                  </tr>
-                </thead>
-                <tbody id="emailHistoryTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white">
-                  <!-- Dynamically rendered -->
-                </tbody>
-              </table>
+            <!-- Partitioned Grouped Cards Container (Default Collapsed: 預設值全部折疊, 依新至舊排序) -->
+            <div id="emailGroupedCardsContainer" class="space-y-4 pt-2">
+              <!-- Dynamically injected partitioned sections -->
             </div>
           </div>
 
@@ -401,12 +457,11 @@
 
 
   <!-- ========================================================================= -->
-  <!-- MODAL: 手動觸發 Email 寄出作業 (Complete & Fully Functional Studio) -->
+  <!-- MODAL: 手動觸發 Email 寄出作業 -->
   <!-- ========================================================================= -->
   <div id="manualSendModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[720px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       
-      <!-- Modal Header -->
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow">
@@ -417,15 +472,12 @@
             <p class="text-xs text-slate-300 font-semibold">即時打包最新 AR 對帳清冊，發送付款通知至指定買主信箱</p>
           </div>
         </div>
-        <button onclick="closeManualSendModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-lg transition">
+        <button type="button" onclick="closeManualSendModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-lg transition">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50 custom-scrollbar">
-        
-        <!-- Filter Row 1: Seller, Exporter, Business Group -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
           <div class="text-xs font-black text-slate-700 border-b border-slate-100 pb-2">1. 選擇業務範圍與發送目標：</div>
           <div class="grid grid-cols-3 gap-3">
@@ -433,8 +485,8 @@
               <label class="block text-xs font-black text-slate-700 mb-1">賣方 (Seller)：</label>
               <select id="msSeller" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-500">
                 <option value="FENC" selected>FENC (遠東新世紀)</option>
-                <option value="FNIS">FNIS</option>
                 <option value="OIHN">OIHN</option>
+                <option value="FNIS">FNIS</option>
               </select>
             </div>
 
@@ -464,7 +516,7 @@
                 <option value="東亞">東亞 (East Asia)</option>
                 <option value="東南亞">東南亞 (Southeast Asia)</option>
                 <option value="中西歐">中西歐 (Western Europe)</option>
-                <option value="歐洲倉">歐洲倉 (Europe Hub)</option>
+                <option value="歐洲倉各區">歐洲倉各區 (Europe Hub)</option>
                 <option value="ALL (全區)">ALL (全區)</option>
               </select>
             </div>
@@ -479,27 +531,22 @@
           </div>
         </div>
 
-        <!-- Filter Row 2: Recipient Details -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
           <div class="text-xs font-black text-slate-700 border-b border-slate-100 pb-2">2. 收件人與信件主旨：</div>
-          
           <div>
             <label class="block text-xs font-black text-slate-700 mb-1">收件人 (To Email)：</label>
             <input type="text" id="msToEmail" value="client.payment@vinayplastics.in, finance@client.in" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-500">
           </div>
-
           <div>
             <label class="block text-xs font-black text-slate-700 mb-1">副本 (Cc Email)：</label>
             <input type="text" id="msCcEmail" value="wang.dm@fenc.com, chang.zc@fenc.com" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-500">
           </div>
-
           <div>
             <label class="block text-xs font-black text-slate-700 mb-1">信件主旨 (Subject)：</label>
             <input type="text" id="msSubject" value="[手動對帳通知] 遠東新世紀 應收帳款對帳清冊與付款通知 (2026/09/01)" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-black text-blue-700 focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
 
-        <!-- Section 3: Attachment Generation & Custom Files -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-black text-slate-800">3. 附加對帳明細檔案：</span>
@@ -510,30 +557,21 @@
           </div>
 
           <div id="msAttachmentList" class="space-y-1.5 pt-1">
-            <div class="p-2.5 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center justify-between text-xs">
-              <span class="font-bold text-blue-900 flex items-center gap-2">
-                <i class="fa-solid fa-file-excel text-emerald-600 text-sm"></i>
-                <span id="msAutoReportFileName">Manual_AR_Export_FENC_PET_20260901.xlsx</span>
-              </span>
-              <span class="px-2 py-0.5 rounded bg-blue-200 text-blue-900 text-[10px] font-black">系統即時產生</span>
-            </div>
+            <!-- Injected via JavaScript -->
           </div>
         </div>
 
-        <!-- Sync Checkbox -->
         <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer p-1 select-none">
           <input type="checkbox" id="msLogCheck" checked class="rounded border-slate-300 text-blue-600">
           <span>寄送成功後，自動寫入「每週應收帳款 Email 通知歷程」並同步更新統計筆數</span>
         </label>
-
       </div>
 
-      <!-- Modal Footer -->
       <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-end gap-3">
-        <button onclick="closeManualSendModal()" class="px-5 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition">
+        <button type="button" onclick="closeManualSendModal()" class="px-5 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition">
           取消
         </button>
-        <button onclick="executeManualSend()" class="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md transition active:scale-98 flex items-center gap-1.5">
+        <button type="button" onclick="executeManualSend()" class="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md transition active:scale-98 flex items-center gap-1.5">
           <i class="fa-solid fa-paper-plane"></i> 立即發送 Email
         </button>
       </div>
@@ -543,7 +581,173 @@
 
 
   <!-- ========================================================================= -->
-  <!-- MODAL: 單筆發票歷程編輯 -->
+  <!-- MODAL: 批次說明作業 -->
+  <!-- ========================================================================= -->
+  <div id="batchModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[1280px] max-h-[94vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow">
+            <i class="fa-solid fa-bolt text-white text-base"></i>
+          </div>
+          <div>
+            <h3 class="text-base md:text-lg font-black tracking-wide">⚡ 批次說明作業</h3>
+            <p class="text-xs text-slate-300 font-semibold">勾選欲處理發票，填寫批次說明並可一鍵 AI 摘要提煉帶入</p>
+          </div>
+        </div>
+        <button onclick="closeBatchModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-lg transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-slate-50/40">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="text-xs md:text-sm font-black text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check text-blue-600"></i> 勾選欲批次處理發票：
+              </span>
+              <label class="flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 cursor-pointer select-none">
+                <input type="checkbox" id="batchOnlyMeCheckbox" onchange="filterBatchInvoices()" checked class="rounded border-slate-300 text-blue-600">
+                <span>👤 僅顯示目前登入人員 (王大明)</span>
+              </label>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="selectAllBatchInvoices(true)" class="px-3 py-1 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs">全選 (顯示項)</button>
+              <button onclick="selectAllBatchInvoices(false)" class="px-3 py-1 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs">全不選</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-2xs">
+            <table class="w-full text-left text-xs border-collapse min-w-[960px]">
+              <thead class="bg-slate-50 text-slate-700 font-black border-b border-slate-200">
+                <tr>
+                  <th class="p-3 text-center w-14">選取</th>
+                  <th class="p-3 text-center w-12">NO</th>
+                  <th class="p-3 text-center w-24">逾期天數</th>
+                  <th class="p-3 w-28">業務</th>
+                  <th class="p-3 w-28">事業群</th>
+                  <th class="p-3 w-56">客戶名稱</th>
+                  <th class="p-3 w-36">發票號碼</th>
+                  <th class="p-3 text-center w-16">項次</th>
+                  <th class="p-3 w-24">收款方式</th>
+                  <th class="p-3 text-center w-16">幣別</th>
+                  <th class="p-3 text-right w-28">金額</th>
+                </tr>
+              </thead>
+              <tbody id="batchInvoiceTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs md:text-sm font-black text-slate-800">選擇常用說明（可複選）：</span>
+            <button onclick="openCommonPhrasesEditModal()" class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-blue-700 font-bold text-xs border border-slate-300 transition">
+              <i class="fa-solid fa-pen-to-square"></i> 編輯常用說明
+            </button>
+          </div>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs font-bold text-slate-700">
+              <input type="checkbox" onchange="insertPhraseToEditor(this, '(1) 已通知客戶儘速付清貨款並提供匯款水單')" class="rounded border-slate-300 text-blue-600">
+              <span>(1) 已通知客戶儘速付清貨款並提供匯款水單</span>
+            </label>
+            <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs font-bold text-slate-700">
+              <input type="checkbox" onchange="insertPhraseToEditor(this, '(2) 客戶匯款內容異常，已通知客戶儘速更正匯款電文')" class="rounded border-slate-300 text-blue-600">
+              <span>(2) 客戶匯款內容異常，已通知客戶儘速更正匯款電文</span>
+            </label>
+            <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs font-bold text-slate-700">
+              <input type="checkbox" onchange="insertPhraseToEditor(this, '(3) 客戶放假結束後，將安排匯款')" class="rounded border-slate-300 text-blue-600">
+              <span>(3) 客戶放假結束後，將安排匯款</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <input type="radio" id="batchRichRadio" checked class="text-blue-600">
+              <label for="batchRichRadio" class="text-xs md:text-sm font-black text-slate-800">📝 人工批次說明內容 (Rich Editor)：</label>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button onclick="openPromptConfigModal()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 shadow-xs transition">
+                <i class="fa-solid fa-sliders text-slate-500"></i> AI 摘要提示詞
+              </button>
+              <button onclick="distillAIBatchContent()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs shadow-md transition active:scale-98">
+                <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i> ✨ AI 摘要提煉
+              </button>
+            </div>
+          </div>
+
+          <div class="border border-slate-300 rounded-2xl overflow-hidden shadow-2xs focus-within:ring-2 focus-within:ring-blue-500">
+            <div class="bg-slate-50 border-b border-slate-200 p-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-700">
+              <button type="button" onclick="execCmd('bold')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200 font-black" title="粗體"><strong>B</strong></button>
+              <button type="button" onclick="execCmd('italic')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200 italic font-serif" title="斜體"><em>I</em></button>
+              <button type="button" onclick="execCmd('underline')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200 underline" title="底線"><u>U</u></button>
+              <button type="button" onclick="execCmd('strikeThrough')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200 line-through" title="刪除線">S</button>
+              <div class="h-4 w-px bg-slate-300 mx-1"></div>
+              <label class="flex items-center gap-1 cursor-pointer p-1 rounded hover:bg-slate-200" title="文字顏色">
+                <i class="fa-solid fa-palette text-blue-600"></i>
+                <input type="color" onchange="execCmd('foreColor', this.value)" class="w-4 h-4 border-0 p-0 bg-transparent cursor-pointer">
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer p-1 rounded hover:bg-slate-200" title="文字背景標籤色">
+                <i class="fa-solid fa-highlighter text-yellow-600"></i>
+                <input type="color" value="#fef08a" onchange="execCmd('hiliteColor', this.value)" class="w-4 h-4 border-0 p-0 bg-transparent cursor-pointer">
+              </label>
+              <div class="h-4 w-px bg-slate-300 mx-1"></div>
+              <button type="button" onclick="execCmd('justifyLeft')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="靠左對齊"><i class="fa-solid fa-align-left"></i></button>
+              <button type="button" onclick="execCmd('justifyCenter')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="置中對齊"><i class="fa-solid fa-align-center"></i></button>
+              <button type="button" onclick="execCmd('justifyRight')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="靠右對齊"><i class="fa-solid fa-align-right"></i></button>
+              <div class="h-4 w-px bg-slate-300 mx-1"></div>
+              <button type="button" onclick="execCmd('insertUnorderedList')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="項目符號清單"><i class="fa-solid fa-list-ul"></i></button>
+              <button type="button" onclick="execCmd('insertOrderedList')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="編號清單"><i class="fa-solid fa-list-ol"></i></button>
+              <div class="h-4 w-px bg-slate-300 mx-1"></div>
+              <button type="button" onclick="insertTableToEditor()" class="px-2 h-7 flex items-center gap-1 rounded hover:bg-slate-200 text-[11px] font-bold" title="插入表格">
+                <i class="fa-solid fa-table-cells text-slate-600"></i> 表格
+              </button>
+            </div>
+
+            <div id="batchRichEditorContent" contenteditable="true" class="rich-editor-content p-4 min-h-[140px] max-h-[260px] overflow-y-auto bg-white text-xs md:text-sm font-medium text-slate-800 leading-relaxed outline-none">
+              客戶承諾於本週前完成電匯支付，已取得買方最新水單資料。
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs md:text-sm font-black text-slate-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-paperclip text-blue-600"></i> 批次附件上傳功能 (支援上傳、下載、預覽)：
+            </span>
+            <label class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-blue-700 font-black text-xs cursor-pointer transition shadow-2xs">
+              <i class="fa-solid fa-plus"></i> 選擇附件檔案
+              <input type="file" multiple onchange="handleBatchFileUpload(event)" class="hidden">
+            </label>
+          </div>
+
+          <div id="batchUploadedFilesList" class="flex flex-wrap gap-2 text-xs font-bold text-slate-700">
+            <span class="text-slate-400 text-xs italic">尚未選擇任何附加檔案 (點擊上方按鈕上傳水單或證明檔案)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-end gap-3">
+        <button onclick="closeBatchModal()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition">
+          取消
+        </button>
+        <button onclick="submitBatchReport()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md transition active:scale-98">
+          <i class="fa-solid fa-cloud-arrow-up"></i> 確認帶入說明並提交本處
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: 單筆發票歷程編輯 (History Modal) -->
   <!-- ========================================================================= -->
   <div id="historyModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[1120px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -1440,6 +1644,7 @@
       }
     ];
 
+    // Rich Test Data containing FENC, OIHN, FNIS sections across multiple years
     let emailHistoryList = [
       {
         id: "EMAIL-001",
@@ -1464,6 +1669,42 @@
         weekday: "星期四",
         sender: "系統自動寄出",
         files: ["AR_Weekly_Report_FENC_PET_20260827.xlsx"]
+      },
+      {
+        id: "EMAIL-005",
+        seller: "FENC",
+        exporter: "FENC",
+        bg: "固聚酯粒",
+        dest: "東北亞",
+        whType: "非國外倉",
+        dateTime: "2025/12/28 09:30:00",
+        weekday: "星期日",
+        sender: "系統自動寄出",
+        files: ["2025年度固聚總結.xlsx"]
+      },
+      {
+        id: "EMAIL-003",
+        seller: "OIHN",
+        exporter: "FENC",
+        bg: "固聚酯粒",
+        dest: "歐洲倉各區",
+        whType: "歐洲倉",
+        dateTime: "2026/08/28 10:15:30",
+        weekday: "星期五",
+        sender: "張美麗 (E10288)",
+        files: ["AR_Weekly_Report_OIHN_Europe_20260828.xlsx", "Warehouse_Release_Voucher.pdf"]
+      },
+      {
+        id: "EMAIL-004",
+        seller: "FNIS",
+        exporter: "FEAV",
+        bg: "成衣",
+        dest: "東南亞",
+        whType: "非國外倉",
+        dateTime: "2026/08/29 16:40:12",
+        weekday: "星期六",
+        sender: "李小健 (E10299)",
+        files: ["AR_Statement_FEAV_Garment_20260829.xlsx"]
       }
     ];
 
@@ -1590,7 +1831,7 @@
       renderCustomerCards();
       renderMgmtTable();
       renderAbnormalTable();
-      renderEmailHistoryTable();
+      onEmailFilterChange();
       updateTabBadges();
       closeAllDropdownsOnClickOutside();
     });
@@ -1672,6 +1913,7 @@
         emailSec.classList.remove('hidden');
         emailBtn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-xs transition bg-blue-600 text-white shadow-md";
         reportBtn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:text-white hover:bg-slate-800 transition";
+        onEmailFilterChange();
       }
     }
 
@@ -1866,7 +2108,7 @@
     }
 
     /* ---------------------------------------------------------
-       5. ABNORMAL & EMAIL NOTIFICATION HISTORIES (WITH LIVE FILTER)
+       5. ABNORMAL & EMAIL NOTIFICATION HISTORIES (GROUPED DISPLAY)
        --------------------------------------------------------- */
     function renderAbnormalTable() {
       const tbody = document.getElementById('abnormalTableBody');
@@ -1899,38 +2141,79 @@
       });
     }
 
+    function onEmailFilterChange() {
+      const sellers = Array.from(document.querySelectorAll('input[name="em-seller-cb"]:checked')).map(cb => cb.value);
+      const exporters = Array.from(document.querySelectorAll('input[name="em-exp-cb"]:checked')).map(cb => cb.value);
+      const bgs = Array.from(document.querySelectorAll('input[name="em-bg-cb"]:checked')).map(cb => cb.value);
+
+      document.getElementById('em-seller-label').textContent = sellers.length === 3 ? '賣方：全部' : (sellers.length === 0 ? '賣方：未選擇' : `賣方：已選 (${sellers.length})`);
+      document.getElementById('em-exp-label').textContent = exporters.length === 2 ? '出口商：全部' : (exporters.length === 0 ? '出口商：未選擇' : `出口商：已選 (${exporters.length})`);
+      document.getElementById('em-bg-label').textContent = bgs.length === 3 ? '事業群：全部' : (bgs.length === 0 ? '事業群：未選擇' : `事業群：已選 (${bgs.length})`);
+
+      renderEmailHistoryTable();
+    }
+
     function renderEmailHistoryTable() {
-      const tbody = document.getElementById('emailHistoryTableBody');
-      tbody.innerHTML = '';
+      const container = document.getElementById('emailGroupedCardsContainer');
+      const statsBadgeContainer = document.getElementById('emailYearStatsBadges');
+      container.innerHTML = '';
+      statsBadgeContainer.innerHTML = '';
 
-      // Get active global filter criteria
-      const sellers = Array.from(document.querySelectorAll('input[name="df-seller-cb"]:checked')).map(cb => cb.value);
-      const exporters = Array.from(document.querySelectorAll('input[name="df-exp-cb"]:checked')).map(cb => cb.value);
-      const bgs = Array.from(document.querySelectorAll('input[name="df-bg-cb"]:checked')).map(cb => cb.value);
+      const sellers = Array.from(document.querySelectorAll('input[name="em-seller-cb"]:checked')).map(cb => cb.value);
+      const exporters = Array.from(document.querySelectorAll('input[name="em-exp-cb"]:checked')).map(cb => cb.value);
+      const bgs = Array.from(document.querySelectorAll('input[name="em-bg-cb"]:checked')).map(cb => cb.value);
 
-      // Update Filter Badges UI in Email section
-      document.getElementById('emailBadgeSeller').textContent = `賣方：${sellers.length === 3 ? '全部' : sellers.join(', ')}`;
-      document.getElementById('emailBadgeExporter').textContent = `出口商：${exporters.length === 2 ? '全部' : exporters.join(', ')}`;
-      document.getElementById('emailBadgeBg').textContent = `事業群：${bgs.length === 3 ? '全部' : bgs.join(', ')}`;
-
-      let list = emailHistoryList.filter(row => {
-        if (sellers.length > 0 && !sellers.includes(row.seller)) return false;
-        if (exporters.length > 0 && !exporters.includes(row.exporter)) return false;
-        if (bgs.length > 0 && !bgs.includes(row.bg)) return false;
+      // Filter email histories according to checked items
+      let filteredList = emailHistoryList.filter(row => {
+        if (!sellers.includes(row.seller)) return false;
+        if (!exporters.includes(row.exporter)) return false;
+        if (!bgs.includes(row.bg)) return false;
         return true;
       });
 
-      document.getElementById('emailHistoryTotalBadge').textContent = `2026 迄今，共 ${list.length} 筆發信紀錄`;
+      // Calculate counts per year dynamically
+      const yearCountMap = {};
+      filteredList.forEach(item => {
+        const year = item.dateTime.substring(0, 4);
+        yearCountMap[year] = (yearCountMap[year] || 0) + 1;
+      });
 
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400 font-bold">目前無符合篩選條件之 Email 發信紀錄</td></tr>`;
+      const sortedYears = Object.keys(yearCountMap).sort((a, b) => b - a);
+      if (sortedYears.length === 0) {
+        statsBadgeContainer.innerHTML = `<span class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-lg border border-slate-200 font-bold">無符合條件紀錄</span>`;
+      } else {
+        statsBadgeContainer.innerHTML = sortedYears.map(yr => `
+          <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 font-black shadow-2xs">
+            ${yr} 迄今，共 ${yearCountMap[yr]} 筆發信紀錄
+          </span>
+        `).join('');
+      }
+
+      if (filteredList.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-400 font-bold text-xs bg-slate-50 rounded-2xl border border-slate-200">目前無符合篩選條件之 Email 發信紀錄</div>`;
         return;
       }
 
-      list.forEach((row, idx) => {
-        const tr = `
+      // Group email histories by: Seller + Exporter + BG
+      const groups = {};
+      filteredList.forEach(item => {
+        const key = `${item.seller}__${item.exporter}__${item.bg}`;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+      });
+
+      Object.entries(groups).forEach(([groupKey, list], gIdx) => {
+        const first = list[0];
+        const cardId = `email-group-${gIdx}`;
+        const bodyId = `email-body-${gIdx}`;
+        const arrowId = `email-arrow-${gIdx}`;
+
+        // SPECIFICATION 1: 由新至舊排序 email 通知記錄 (Sort descending by dateTime)
+        const sortedList = [...list].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+
+        let rowsHtml = sortedList.map((row, rIdx) => `
           <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 text-center font-bold">${idx + 1}</td>
+            <td class="p-3 text-center font-bold">${rIdx + 1}</td>
             <td class="p-3 font-bold">${row.seller}</td>
             <td class="p-3 font-bold">${row.exporter}</td>
             <td class="p-3 text-center">
@@ -1938,7 +2221,9 @@
             </td>
             <td class="p-3 font-bold text-slate-800">${row.dest}</td>
             <td class="p-3">${row.whType}</td>
-            <td class="p-3 font-bold text-slate-700">${row.dateTime} <span class="text-slate-400 font-normal">(${row.weekday})</span></td>
+            <td class="p-3 font-bold text-slate-700 font-mono">
+              <span>${row.dateTime}</span> <span class="text-slate-400 font-normal">(${row.weekday})</span>
+            </td>
             <td class="p-3 font-bold">${row.sender}</td>
             <td class="p-3 text-center">
               <button onclick="openAttachmentModal('${row.id}', '${row.dest} 附加檔案', ${JSON.stringify(row.files).replace(/"/g, '&quot;')})" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded-xl font-black text-xs transition shadow-2xs">
@@ -1951,8 +2236,54 @@
               </button>
             </td>
           </tr>
+        `).join('');
+
+        // SPECIFICATION 2: 預設值：全部折疊 (Body has hidden, Toggle button shows '▼ 展開明細')
+        const groupHtml = `
+          <div id="${cardId}" class="rounded-2xl border-2 border-slate-200 bg-white shadow-xs overflow-hidden">
+            <!-- Group Card Header -->
+            <div onclick="toggleCardAccordion('${bodyId}', '${arrowId}')" class="px-5 py-3.5 bg-gradient-to-r from-blue-100/80 via-blue-50 to-white border-b border-blue-200 flex flex-wrap items-center justify-between gap-3 cursor-pointer select-none">
+              <div class="flex items-center flex-wrap gap-2 text-xs font-black text-slate-800">
+                <span class="text-base">📁</span>
+                <span class="px-2.5 py-0.5 rounded-lg bg-white border border-slate-300 text-slate-800 shadow-2xs font-bold">賣方：${first.seller}</span>
+                <span class="px-2.5 py-0.5 rounded-lg bg-white border border-slate-300 text-slate-800 shadow-2xs font-bold">出口商：${first.exporter}</span>
+                <span class="px-2.5 py-0.5 rounded-lg bg-blue-600 text-white shadow-2xs font-black">事業群：${first.bg}</span>
+                <span class="px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 font-black">
+                  📨 歷史發信：${sortedList.length} 筆
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-black text-blue-700">
+                <span id="${arrowId}">▼ 展開明細</span>
+              </div>
+            </div>
+
+            <!-- Group Card Table Body (DEFAULT COLLAPSED: hidden) -->
+            <div id="${bodyId}" class="hidden p-4 bg-slate-50/30">
+              <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead class="bg-slate-50 text-slate-700 font-black border-b border-slate-200">
+                    <tr>
+                      <th class="p-3 text-center w-12">NO</th>
+                      <th class="p-3 w-20">賣方</th>
+                      <th class="p-3 w-20">出口商</th>
+                      <th class="p-3 w-28 text-center">事業群</th>
+                      <th class="p-3 w-32">目的地區別</th>
+                      <th class="p-3 w-28">國外倉類別</th>
+                      <th class="p-3 w-48">Email 通知日期 / 時間 / 星期</th>
+                      <th class="p-3 w-36">寄件人員</th>
+                      <th class="p-3 w-44 text-center">附加檔案</th>
+                      <th class="p-3 text-center w-24">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200 font-semibold text-slate-700">
+                    ${rowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         `;
-        tbody.insertAdjacentHTML('beforeend', tr);
+        container.insertAdjacentHTML('beforeend', groupHtml);
       });
     }
 
@@ -1961,31 +2292,46 @@
        --------------------------------------------------------- */
     function openManualSendModal() {
       manualSendCustomFiles = [];
-      const bg = document.getElementById('msBg').value;
+      const bg = document.getElementById('msBg') ? document.getElementById('msBg').value : "固聚酯粒";
       syncManualSendTemplate(bg);
       renderManualSendFileList();
-      document.getElementById('manualSendModal').classList.remove('hidden');
+      
+      const modal = document.getElementById('manualSendModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      }
     }
 
     function closeManualSendModal() {
-      document.getElementById('manualSendModal').classList.add('hidden');
+      const modal = document.getElementById('manualSendModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
     }
 
     function syncManualSendTemplate(bg) {
       const today = "2026/09/01";
-      document.getElementById('msAutoReportFileName').textContent = `Manual_AR_Export_FENC_${bg}_${today.replace(/\//g,'')}.xlsx`;
-      document.getElementById('msSubject').value = `[手動對帳通知] 遠東新世紀 ${bg} 應收帳款對帳清冊與付款通知 (${today})`;
+      const fileElem = document.getElementById('msAutoReportFileName');
+      const subElem = document.getElementById('msSubject');
+      const toElem = document.getElementById('msToEmail');
+      const ccElem = document.getElementById('msCcEmail');
+
+      if (fileElem) fileElem.textContent = `Manual_AR_Export_FENC_${bg}_${today.replace(/\//g,'')}.xlsx`;
+      if (subElem) subElem.value = `[手動對帳通知] 遠東新世紀 ${bg} 應收帳款對帳清冊與付款通知 (${today})`;
       
-      if (bg === "固聚酯粒") {
-        document.getElementById('msToEmail').value = "client.payment@vinayplastics.in, finance@client.in";
-        document.getElementById('msCcEmail').value = "wang.dm@fenc.com, chang.zc@fenc.com";
-      } else if (bg === "短纖") {
-        document.getElementById('msToEmail').value = "buyer.finance@formosa-textiles.vn";
-        document.getElementById('msCcEmail').value = "chang.ml@fenc.com, liu.xm@fenc.com";
-      } else {
-        document.getElementById('msToEmail').value = "acct@techplast.kr";
-        document.getElementById('msCcEmail').value = "lee.xj@fenc.com, lin.kw@fenc.com";
+      if (toElem && ccElem) {
+        if (bg === "固聚酯粒") {
+          toElem.value = "client.payment@vinayplastics.in, finance@client.in";
+          ccElem.value = "wang.dm@fenc.com, chang.zc@fenc.com";
+        } else if (bg === "短纖") {
+          toElem.value = "buyer.finance@formosa-textiles.vn";
+          ccElem.value = "chang.ml@fenc.com, liu.xm@fenc.com";
+        } else {
+          toElem.value = "acct@techplast.kr";
+          ccElem.value = "lee.xj@fenc.com, lin.kw@fenc.com";
+        }
       }
+      renderManualSendFileList();
     }
 
     function handleManualSendCustomUpload(e) {
@@ -1998,7 +2344,9 @@
 
     function renderManualSendFileList() {
       const container = document.getElementById('msAttachmentList');
-      const bg = document.getElementById('msBg').value;
+      if (!container) return;
+      
+      const bg = document.getElementById('msBg') ? document.getElementById('msBg').value : "固聚酯粒";
       const today = "2026/09/01";
       const autoFile = `Manual_AR_Export_FENC_${bg}_${today.replace(/\//g,'')}.xlsx`;
 
@@ -2006,7 +2354,7 @@
         <div class="p-2.5 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center justify-between text-xs">
           <span class="font-bold text-blue-900 flex items-center gap-2">
             <i class="fa-solid fa-file-excel text-emerald-600 text-sm"></i>
-            <span>${autoFile}</span>
+            <span id="msAutoReportFileName">${autoFile}</span>
           </span>
           <span class="px-2 py-0.5 rounded bg-blue-200 text-blue-900 text-[10px] font-black">系統即時產生</span>
         </div>
@@ -2066,7 +2414,7 @@
           files: totalFiles
         });
 
-        renderEmailHistoryTable();
+        onEmailFilterChange();
       }
 
       closeManualSendModal();
@@ -2194,7 +2542,7 @@
       abnormalNotices = abnormalNotices.filter(a => a.caseId !== currentResendingCaseId);
 
       renderAbnormalTable();
-      renderEmailHistoryTable();
+      onEmailFilterChange();
       closeResendModal();
       alert(`✅ 案件【${currentResendingCaseId}】已成功手動補發郵件，並已寫入每週通知歷程！`);
     }
@@ -2403,7 +2751,7 @@
       document.getElementById('histInvoiceSummaryRow').innerHTML = `
         <tr>
           <td class="p-2.5 text-center font-bold">1</td>
-          <td class="p-2.5 text-center font-black ${inv.overdueDays >= 16 ? 'text-rose-600' : (inv.overdueDays > 0 ? 'text-amber-600' : 'text-emerald-600')}">${inv.overdueDays}</td>
+          <td class="p-2.5 text-center font-black ${inv.overdueDays >= 16 ? 'text-rose-600' : 'text-amber-600'}">${inv.overdueDays}</td>
           <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded ${inv.freezeStatus === '凍結' ? 'bg-rose-100 text-rose-700 font-bold' : 'bg-slate-100 text-slate-600'}">${inv.freezeStatus}</span></td>
           <td class="p-2.5 text-center font-semibold text-slate-600">${inv.freezeDate}</td>
           <td class="p-2.5 font-mono font-black text-blue-700">${inv.invoiceNo}</td>
@@ -2885,7 +3233,7 @@
       closeViewFilterModal();
       renderCustomerCards();
       renderMgmtTable();
-      renderEmailHistoryTable(); // Live update email history based on filter
+      onEmailFilterChange();
     }
 
     /* ---------------------------------------------------------
@@ -2968,7 +3316,7 @@
     }
 
     /* ---------------------------------------------------------
-       17. PROMPT CONFIG & GENERAL UTILS
+       17. PROMPT CONFIG & TIME/REFRESH UTILS
        --------------------------------------------------------- */
     function openPromptConfigModal() {
       document.getElementById('promptConfigModal').classList.remove('hidden');
@@ -2987,17 +3335,27 @@
       alert("開啟常用語句維護視窗...");
     }
 
+    function getNowFormattedStr() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    }
+
     function refreshData() {
+      const nowStr = getNowFormattedStr();
+      document.getElementById('arLastUpdateTimestamp').textContent = nowStr;
       renderCustomerCards();
       renderMgmtTable();
       updateTabBadges();
-      alert("AR 帳款資料已更新至最新狀態！");
+      alert(`AR 帳款資料已更新！\n最新更新時間：${nowStr}`);
     }
 
     function refreshEmailHistory() {
-      renderEmailHistoryTable();
+      const nowStr = getNowFormattedStr();
+      document.getElementById('emailLastRefreshTimestamp').textContent = nowStr;
+      onEmailFilterChange();
       renderAbnormalTable();
-      alert("Email 通知歷程與異常清冊已重新整理！");
+      alert(`Email 通知歷程與異常清冊已重新整理！\n最新整理時間：${nowStr}`);
     }
 
     function closeAllDropdownsOnClickOutside() {
