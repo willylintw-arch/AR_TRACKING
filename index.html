@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="h-full overflow-hidden" id="root-html">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,8 @@
     }
   </script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap');
+
     :root {
       --app-font-scale: 0.9333; /* 預設 93% 字體 (約 14px) */
       --app-base-size: 15px;
@@ -30,7 +32,7 @@
       -moz-osx-font-smoothing: grayscale;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -67,10 +69,10 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased select-none">
+<body class="bg-slate-100 text-slate-800 h-full w-full overflow-hidden flex antialiased select-none">
 
   <!-- ======================== MAIN APPLICATION LAYOUT ======================== -->
-  <div class="flex h-screen w-screen overflow-hidden">
+  <div class="flex h-full w-full overflow-hidden">
     
     <!-- 1. SIDEBAR -->
     <aside id="appSidebar" class="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 transition-all duration-300 relative z-30 shadow-xl">
@@ -228,9 +230,7 @@
           </div>
 
           <!-- Customer Accordion Cards Container -->
-          <div id="customerCardsContainer" class="space-y-4">
-            <!-- Dynamic Injection -->
-          </div>
+          <div id="customerCardsContainer" class="space-y-4"></div>
 
           <!-- Management Progress Section -->
           <div id="managementSection" class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
@@ -280,9 +280,7 @@
                     <th class="p-3 text-center w-20">操作</th>
                   </tr>
                 </thead>
-                <tbody id="mgmtTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white">
-                  <!-- Injected via JavaScript -->
-                </tbody>
+                <tbody id="mgmtTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white"></tbody>
               </table>
             </div>
 
@@ -338,14 +336,12 @@
                     <th class="p-3 text-center w-24">操作</th>
                   </tr>
                 </thead>
-                <tbody id="abnormalTableBody" class="divide-y divide-rose-100 font-semibold text-slate-700">
-                  <!-- Dynamically rendered -->
-                </tbody>
+                <tbody id="abnormalTableBody" class="divide-y divide-rose-100 font-semibold text-slate-700"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- 2. Weekly AR Email Notification History Table (Grouped Cards, Default Collapsed, Sorted Descending) -->
+          <!-- 2. Weekly AR Email Notification History Table (Grouped by Buyer / Exporter / BG) -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4 relative">
             
             <!-- Top Header & Action Controls -->
@@ -360,7 +356,7 @@
               
               <!-- Required Button Order: Template Edit -> Refresh -> Manual Send -->
               <div class="flex items-center flex-wrap gap-2.5">
-                <button onclick="openEmailTemplateModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-800 text-xs font-black shadow-xs transition active:scale-98">
+                <button onclick="openTemplateEditorModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-800 text-xs font-black shadow-xs transition active:scale-98">
                   <i class="fa-solid fa-file-pen text-blue-600"></i> Email通知內文編輯
                 </button>
 
@@ -374,65 +370,62 @@
               </div>
             </div>
 
-            <!-- Multi-Select Dropdowns Filter Bar + Dynamic Year Badges + Top-Right Aligned Timestamp -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-              <div class="flex items-center flex-wrap gap-2 text-xs font-bold text-slate-700">
+            <!-- Filter Controls: 3 Multi-Select Dropdowns + Yearly Count Badges + Top-Right Timestamp -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center flex-wrap gap-2.5">
                 
-                <!-- 1. 賣方 Multi-Select Dropdown -->
-                <div class="relative">
-                  <button type="button" onclick="toggleMultiDropdown('em-seller-menu')" id="em-seller-btn" class="h-9 px-3 bg-white border border-slate-300 rounded-xl text-xs font-black text-left flex items-center justify-between shadow-2xs hover:bg-slate-50">
-                    <span id="em-seller-label">賣方：全部</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2"></i>
+                <!-- 1. 買方 Dropdown (多選) -->
+                <div class="relative dropdown-container">
+                  <button type="button" onclick="toggleMultiDropdown('df-email-buyer-menu')" id="df-email-buyer-btn" class="h-9 px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center gap-2 shadow-2xs">
+                    <span id="df-email-buyer-label">買方: 全部</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                   </button>
-                  <div id="em-seller-menu" class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-3 z-30 space-y-2">
-                    <div class="flex items-center justify-between border-b pb-1 text-xs font-bold text-slate-500">
-                      <span>賣方清單</span>
-                      <button type="button" onclick="toggleAllCheckboxes('em-seller-cb', true); onEmailFilterChange();" class="text-blue-600 hover:underline">全選</button>
+                  <div id="df-email-buyer-menu" class="hidden absolute left-0 top-full mt-1.5 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                      <span>買方清單</span>
+                      <button type="button" onclick="toggleAllCheckboxes('df-email-buyer-cb', true)" class="text-blue-600 hover:underline">全選</button>
                     </div>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-seller-cb" value="FENC" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FENC (遠東新世紀)</label>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-seller-cb" value="OIHN" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> OIHN</label>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-seller-cb" value="FNIS" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FNIS</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-buyer-cb" value="FENC" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> FENC</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-buyer-cb" value="OIHN" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> OIHN</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-buyer-cb" value="FNIS" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> FNIS</label>
                   </div>
                 </div>
 
-                <!-- 2. 出口商 Multi-Select Dropdown -->
-                <div class="relative">
-                  <button type="button" onclick="toggleMultiDropdown('em-exp-menu')" id="em-exp-btn" class="h-9 px-3 bg-white border border-slate-300 rounded-xl text-xs font-black text-left flex items-center justify-between shadow-2xs hover:bg-slate-50">
-                    <span id="em-exp-label">出口商：全部</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2"></i>
+                <!-- 2. 出口商 Dropdown (多選) -->
+                <div class="relative dropdown-container">
+                  <button type="button" onclick="toggleMultiDropdown('df-email-exp-menu')" id="df-email-exp-btn" class="h-9 px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center gap-2 shadow-2xs">
+                    <span id="df-email-exp-label">出口商: 全部</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                   </button>
-                  <div id="em-exp-menu" class="hidden absolute left-0 top-full mt-1.5 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl p-3 z-30 space-y-2">
-                    <div class="flex items-center justify-between border-b pb-1 text-xs font-bold text-slate-500">
+                  <div id="df-email-exp-menu" class="hidden absolute left-0 top-full mt-1.5 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
                       <span>出口商清單</span>
-                      <button type="button" onclick="toggleAllCheckboxes('em-exp-cb', true); onEmailFilterChange();" class="text-blue-600 hover:underline">全選</button>
+                      <button type="button" onclick="toggleAllCheckboxes('df-email-exp-cb', true)" class="text-blue-600 hover:underline">全選</button>
                     </div>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-exp-cb" value="FENC" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FENC (遠東新世紀)</label>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-exp-cb" value="FEAV" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> FEAV (遠東服裝)</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-exp-cb" value="FENC" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> FENC</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-exp-cb" value="FEAV" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> FEAV</label>
                   </div>
                 </div>
 
-                <!-- 3. 事業群 Multi-Select Dropdown -->
-                <div class="relative">
-                  <button type="button" onclick="toggleMultiDropdown('em-bg-menu')" id="em-bg-btn" class="h-9 px-3 bg-white border border-slate-300 rounded-xl text-xs font-black text-left flex items-center justify-between shadow-2xs hover:bg-slate-50">
-                    <span id="em-bg-label">事業群：全部</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2"></i>
+                <!-- 3. 事業群 Dropdown (多選) -->
+                <div class="relative dropdown-container">
+                  <button type="button" onclick="toggleMultiDropdown('df-email-bg-menu')" id="df-email-bg-btn" class="h-9 px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center gap-2 shadow-2xs">
+                    <span id="df-email-bg-label">事業群: 全部</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                   </button>
-                  <div id="em-bg-menu" class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-3 z-30 space-y-2">
-                    <div class="flex items-center justify-between border-b pb-1 text-xs font-bold text-slate-500">
+                  <div id="df-email-bg-menu" class="hidden absolute left-0 top-full mt-1.5 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
                       <span>事業群清單</span>
-                      <button type="button" onclick="toggleAllCheckboxes('em-bg-cb', true); onEmailFilterChange();" class="text-blue-600 hover:underline">全選</button>
+                      <button type="button" onclick="toggleAllCheckboxes('df-email-bg-cb', true)" class="text-blue-600 hover:underline">全選</button>
                     </div>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-bg-cb" value="固聚酯粒" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> 固聚酯粒</label>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-bg-cb" value="短纖" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> 短纖</label>
-                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" name="em-bg-cb" value="成衣" checked class="rounded border-slate-300 text-blue-600" onchange="onEmailFilterChange()"> 成衣</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-bg-cb" value="固聚酯粒" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> 固聚酯粒</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-bg-cb" value="成衣" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> 成衣</label>
+                    <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" name="df-email-bg-cb" value="短纖" checked class="rounded border-slate-300 text-blue-600" onchange="applyEmailFilterAndRender()"> 短纖</label>
                   </div>
                 </div>
 
-                <!-- 4. Dynamic Year-by-Year Count Badges (e.g. 2026 迄今，共 4 筆 / 2025 迄今，共 1 筆) -->
-                <div id="emailYearStatsBadges" class="flex items-center flex-wrap gap-2">
-                  <!-- Injected via JavaScript -->
-                </div>
-
+                <!-- Dynamic Yearly Badges -->
+                <div id="emailYearlyBadgesContainer" class="flex items-center flex-wrap gap-2"></div>
               </div>
 
               <!-- Top-Right Corner Timestamp Badge -->
@@ -443,10 +436,8 @@
               </div>
             </div>
 
-            <!-- Partitioned Grouped Cards Container (Default Collapsed: 預設值全部折疊, 依新至舊排序) -->
-            <div id="emailGroupedCardsContainer" class="space-y-4 pt-2">
-              <!-- Dynamically injected partitioned sections -->
-            </div>
+            <!-- Grouped Partition Cards for Email Histories (Default All Collapsed) -->
+            <div id="emailGroupedCardsContainer" class="space-y-4 pt-2"></div>
           </div>
 
         </section>
@@ -455,13 +446,11 @@
     </main>
   </div>
 
-
   <!-- ========================================================================= -->
   <!-- MODAL: 手動觸發 Email 寄出作業 -->
   <!-- ========================================================================= -->
   <div id="manualSendModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[720px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow">
@@ -482,9 +471,9 @@
           <div class="text-xs font-black text-slate-700 border-b border-slate-100 pb-2">1. 選擇業務範圍與發送目標：</div>
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-black text-slate-700 mb-1">賣方 (Seller)：</label>
+              <label class="block text-xs font-black text-slate-700 mb-1">買方 (Buyer)：</label>
               <select id="msSeller" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-500">
-                <option value="FENC" selected>FENC (遠東新世紀)</option>
+                <option value="FENC" selected>FENC</option>
                 <option value="OIHN">OIHN</option>
                 <option value="FNIS">FNIS</option>
               </select>
@@ -493,8 +482,8 @@
             <div>
               <label class="block text-xs font-black text-slate-700 mb-1">出口商 (Exporter)：</label>
               <select id="msExporter" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-blue-500">
-                <option value="FENC" selected>FENC (遠東新世紀)</option>
-                <option value="FEAV">FEAV (遠東服裝)</option>
+                <option value="FENC" selected>FENC</option>
+                <option value="FEAV">FEAV</option>
               </select>
             </div>
 
@@ -502,8 +491,8 @@
               <label class="block text-xs font-black text-slate-700 mb-1">事業群 (BG)：</label>
               <select id="msBg" onchange="syncManualSendTemplate(this.value)" class="w-full h-10 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-blue-700 focus:ring-2 focus:ring-blue-500">
                 <option value="固聚酯粒" selected>固聚酯粒</option>
-                <option value="短纖">短纖</option>
                 <option value="成衣">成衣</option>
+                <option value="短纖">短纖</option>
               </select>
             </div>
           </div>
@@ -515,8 +504,8 @@
                 <option value="南亞" selected>南亞 (South Asia)</option>
                 <option value="東亞">東亞 (East Asia)</option>
                 <option value="東南亞">東南亞 (Southeast Asia)</option>
-                <option value="中西歐">中西歐 (Western Europe)</option>
-                <option value="歐洲倉各區">歐洲倉各區 (Europe Hub)</option>
+                <option value="東北亞">東北亞 (Northeast Asia)</option>
+                <option value="歐洲各區">歐洲各區 (Europe Hub)</option>
                 <option value="ALL (全區)">ALL (全區)</option>
               </select>
             </div>
@@ -556,9 +545,7 @@
             </label>
           </div>
 
-          <div id="msAttachmentList" class="space-y-1.5 pt-1">
-            <!-- Injected via JavaScript -->
-          </div>
+          <div id="msAttachmentList" class="space-y-1.5 pt-1"></div>
         </div>
 
         <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer p-1 select-none">
@@ -575,14 +562,10 @@
           <i class="fa-solid fa-paper-plane"></i> 立即發送 Email
         </button>
       </div>
-
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
   <!-- MODAL: 批次說明作業 -->
-  <!-- ========================================================================= -->
   <div id="batchModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[1280px] max-h-[94vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -636,9 +619,7 @@
                   <th class="p-3 text-right w-28">金額</th>
                 </tr>
               </thead>
-              <tbody id="batchInvoiceTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white">
-                <!-- Dynamically rendered -->
-              </tbody>
+              <tbody id="batchInvoiceTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white"></tbody>
             </table>
           </div>
         </div>
@@ -703,10 +684,7 @@
               <button type="button" onclick="execCmd('justifyCenter')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="置中對齊"><i class="fa-solid fa-align-center"></i></button>
               <button type="button" onclick="execCmd('justifyRight')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="靠右對齊"><i class="fa-solid fa-align-right"></i></button>
               <div class="h-4 w-px bg-slate-300 mx-1"></div>
-              <button type="button" onclick="execCmd('insertUnorderedList')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="項目符號清單"><i class="fa-solid fa-list-ul"></i></button>
-              <button type="button" onclick="execCmd('insertOrderedList')" class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-200" title="編號清單"><i class="fa-solid fa-list-ol"></i></button>
-              <div class="h-4 w-px bg-slate-300 mx-1"></div>
-              <button type="button" onclick="insertTableToEditor()" class="px-2 h-7 flex items-center gap-1 rounded hover:bg-slate-200 text-[11px] font-bold" title="插入表格">
+              <button type="button" onclick="execCmd('insertTableToEditor')" class="px-2 h-7 flex items-center gap-1 rounded hover:bg-slate-200 text-[11px] font-bold" title="插入表格">
                 <i class="fa-solid fa-table-cells text-slate-600"></i> 表格
               </button>
             </div>
@@ -745,10 +723,7 @@
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
-  <!-- MODAL: 單筆發票歷程編輯 (History Modal) -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: 單筆發票歷程編輯 -->
   <div id="historyModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[1120px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -800,9 +775,7 @@
                 <th class="p-2.5 text-center w-20">繳存狀態</th>
               </tr>
             </thead>
-            <tbody id="histInvoiceSummaryRow" class="font-bold text-slate-800 bg-white">
-              <!-- Injected dynamically -->
-            </tbody>
+            <tbody id="histInvoiceSummaryRow" class="font-bold text-slate-800 bg-white"></tbody>
           </table>
         </div>
 
@@ -829,9 +802,7 @@
                   <th class="p-3 text-center w-16">操作</th>
                 </tr>
               </thead>
-              <tbody id="historyTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white">
-                <!-- Injected dynamically -->
-              </tbody>
+              <tbody id="historyTableBody" class="divide-y divide-slate-200 font-semibold text-slate-700 bg-white"></tbody>
             </table>
           </div>
         </div>
@@ -845,10 +816,7 @@
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
   <!-- MODAL: 歷程附件管理視窗 -->
-  <!-- ========================================================================= -->
   <div id="histAttachmentManageModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[560px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -878,9 +846,7 @@
           </label>
         </div>
 
-        <div id="histAttachModalList" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
-          <!-- Injected dynamically -->
-        </div>
+        <div id="histAttachModalList" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar"></div>
       </div>
 
       <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-end">
@@ -891,111 +857,310 @@
     </div>
   </div>
 
-
   <!-- ========================================================================= -->
-  <!-- MODAL: Email 通知內文公版編輯 -->
+  <!-- MODAL 5: 設定與編輯 Email 通知內文 (全面替換為「完整版04」標準架構) -->
   <!-- ========================================================================= -->
-  <div id="emailTemplateModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[840px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+  <div class="modal-backdrop hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" id="template-editor-modal">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[1320px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow">
-            <i class="fa-solid fa-file-pen text-white text-lg"></i>
+          <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-lg shadow">
+            <i class="fa-solid fa-envelope-open-text"></i>
           </div>
           <div>
-            <h3 class="text-base md:text-lg font-black tracking-wide">📧 每週應收帳款 Email 通知內文公版編輯</h3>
-            <p class="text-xs text-slate-300 font-semibold">維護系統每週定期自動發送至國外買主之帳款催收與對帳信件公版範本</p>
+            <h3 class="font-black text-base md:text-lg text-white tracking-wide">設定與編輯 Email 通知內文</h3>
+            <p class="text-xs text-slate-300 font-semibold">支援多維度條件多選設定、期間管制與個人化通知範本綁定</p>
           </div>
         </div>
-        <button onclick="closeEmailTemplateModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-lg transition">
+        <button type="button" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-lg transition" onclick="closeTemplateEditorModal()">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50/50 custom-scrollbar">
-        <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-          <div class="flex items-center gap-2">
-            <span class="text-xs md:text-sm font-black text-slate-700">選擇套用事業群：</span>
-            <select id="tplSelectBg" onchange="changeTplBg(this.value)" class="h-9 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-black text-blue-700 focus:ring-2 focus:ring-blue-500">
-              <option value="固聚酯粒" selected>固聚酯粒事業群 (PET)</option>
-              <option value="短纖">短纖事業群 (Fiber)</option>
-              <option value="成衣">成衣事業群 (Garment)</option>
-            </select>
+      <div class="p-5 space-y-4 max-h-[84vh] overflow-y-auto bg-slate-50 custom-scrollbar">
+        
+        <!-- 選擇設定維度區塊 -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+            <span class="font-black text-slate-900 text-sm md:text-base flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-blue-700"></i> 選擇設定維度 (各項均可多選)：
+            </span>
+            <span class="text-xs font-black text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300">
+              💡 支援勾選多個項目同時套用此內文設定
+            </span>
           </div>
-          <button type="button" onclick="resetDefaultTemplate()" class="text-xs font-bold text-slate-500 hover:text-blue-600 hover:underline">
-            <i class="fa-solid fa-arrow-rotate-left"></i> 還原系統預設範本
-          </button>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <!-- 1. 賣方 -->
+            <div class="w-full relative dropdown-container">
+              <label class="font-black text-slate-800 block mb-1 text-xs md:text-sm">賣方：</label>
+              <button type="button" class="w-full h-[38px] px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center justify-between shadow-2xs" onclick="toggleMultiDropdown('tpl-seller-panel')">
+                <span class="truncate text-xs font-extrabold" id="tpl-seller-label">全 (3)</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+              <div class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs" id="tpl-seller-panel">
+                <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                  <span>選擇賣方</span>
+                  <button type="button" class="text-blue-600 hover:underline" onclick="toggleAllTplOptions('tpl-seller-cb', true)">全選</button>
+                </div>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-seller-cb rounded border-slate-300 text-blue-600" value="FENC" checked onchange="updateTplLabels()"><span>FENC</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-seller-cb rounded border-slate-300 text-blue-600" value="OIHN" checked onchange="updateTplLabels()"><span>OIHN</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-seller-cb rounded border-slate-300 text-blue-600" value="FNIS" checked onchange="updateTplLabels()"><span>FNIS</span></label>
+              </div>
+            </div>
+
+            <!-- 2. 出口商 -->
+            <div class="w-full relative dropdown-container">
+              <label class="font-black text-slate-800 block mb-1 text-xs md:text-sm">出口商：</label>
+              <button type="button" class="w-full h-[38px] px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center justify-between shadow-2xs" onclick="toggleMultiDropdown('tpl-exporter-panel')">
+                <span class="truncate text-xs font-extrabold" id="tpl-exporter-label">FENC</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+              <div class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs" id="tpl-exporter-panel">
+                <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                  <span>選擇出口商</span>
+                  <button type="button" class="text-blue-600 hover:underline" onclick="toggleAllTplOptions('tpl-exporter-cb', true)">全選</button>
+                </div>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-exporter-cb rounded border-slate-300 text-blue-600" value="FENC" checked onchange="updateTplLabels()"><span>FENC (遠東新世紀)</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-exporter-cb rounded border-slate-300 text-blue-600" value="FEAV" onchange="updateTplLabels()"><span>FEAV (遠東服裝)</span></label>
+              </div>
+            </div>
+
+            <!-- 3. 事業群 -->
+            <div class="w-full relative dropdown-container">
+              <label class="font-black text-slate-800 block mb-1 text-xs md:text-sm">事業群：</label>
+              <button type="button" class="w-full h-[38px] px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center justify-between shadow-2xs" onclick="toggleMultiDropdown('tpl-bg-panel')">
+                <span class="truncate text-xs font-extrabold" id="tpl-bg-label">固聚酯粒</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+              <div class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs" id="tpl-bg-panel">
+                <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                  <span>選擇事業群</span>
+                  <button type="button" class="text-blue-600 hover:underline" onclick="toggleAllTplOptions('tpl-bg-cb', true)">全選</button>
+                </div>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-bg-cb rounded border-slate-300 text-blue-600" value="solid_pet" data-name="固聚酯粒" checked onchange="updateTplLabels()"><span>固聚酯粒</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-bg-cb rounded border-slate-300 text-blue-600" value="staple_fiber" data-name="短纖" onchange="updateTplLabels()"><span>短纖</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-bg-cb rounded border-slate-300 text-blue-600" value="apparel" data-name="成衣" onchange="updateTplLabels()"><span>成衣</span></label>
+              </div>
+            </div>
+
+            <!-- 4. 目的地區別 -->
+            <div class="w-full relative dropdown-container">
+              <label class="font-black text-slate-800 block mb-1 text-xs md:text-sm">目的地區別：</label>
+              <button type="button" class="w-full h-[38px] px-3 bg-slate-50 hover:bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 flex items-center justify-between shadow-2xs" onclick="toggleMultiDropdown('tpl-region-panel')">
+                <span class="truncate text-blue-800 font-black text-xs" id="tpl-region-label">ALL (全部)</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+              <div class="hidden absolute left-0 top-full mt-1.5 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs" id="tpl-region-panel">
+                <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                  <span>選擇目的地區別</span>
+                  <button type="button" class="text-blue-600 hover:underline" onclick="toggleAllTplOptions('tpl-region-cb', true)">全選</button>
+                </div>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-region-cb rounded border-slate-300 text-blue-600" value="ALL" checked onchange="updateTplLabels()"><span>ALL (全部地區)</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-region-cb rounded border-slate-300 text-blue-600" value="東北亞" onchange="updateTplLabels()"><span>東北亞</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-region-cb rounded border-slate-300 text-blue-600" value="東南亞" onchange="updateTplLabels()"><span>東南亞</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-region-cb rounded border-slate-300 text-blue-600" value="南亞" onchange="updateTplLabels()"><span>南亞</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-region-cb rounded border-slate-300 text-blue-600" value="中西歐" onchange="updateTplLabels()"><span>中西歐</span></label>
+              </div>
+            </div>
+
+            <!-- 5. 國外倉類別 -->
+            <div class="w-full relative dropdown-container">
+              <label class="font-black text-blue-950 block mb-1 text-xs md:text-sm">國外倉類別：</label>
+              <button type="button" class="w-full h-[38px] px-3 bg-blue-50/50 hover:bg-white border border-blue-300 rounded-xl text-xs font-black text-blue-950 flex items-center justify-between shadow-2xs" onclick="toggleMultiDropdown('tpl-warehouse-panel')">
+                <span class="truncate text-xs font-black" id="tpl-warehouse-label">全 (2)</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+              <div class="hidden absolute left-0 top-full mt-1.5 w-52 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs" id="tpl-warehouse-panel">
+                <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                  <span>選擇國外倉類別</span>
+                  <button type="button" class="text-blue-600 hover:underline" onclick="toggleAllTplOptions('tpl-warehouse-cb', true)">全選</button>
+                </div>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-warehouse-cb rounded border-slate-300 text-blue-600" value="非國外倉" checked onchange="updateTplLabels()"><span>非國外倉</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-warehouse-cb rounded border-slate-300 text-blue-600" value="歐洲倉" checked onchange="updateTplLabels()"><span>歐洲倉</span></label>
+              </div>
+            </div>
+
+            <!-- 6. 適用人員 -->
+            <div class="w-full relative dropdown-container">
+              <label class="font-black text-slate-800 block mb-1 text-xs md:text-sm">適用人員：</label>
+              <button type="button" class="w-full h-[38px] px-3 bg-blue-50/60 hover:bg-white border border-blue-300 rounded-xl text-xs font-bold text-blue-950 flex items-center justify-between shadow-2xs" onclick="toggleMultiDropdown('tpl-user-panel')">
+                <span class="truncate text-blue-950 font-black text-xs" id="tpl-user-label">王大明</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+              </button>
+              <div class="hidden absolute right-0 top-full mt-1.5 w-60 bg-white border border-slate-200 rounded-xl shadow-2xl p-2.5 z-40 space-y-1.5 text-xs" id="tpl-user-panel">
+                <div class="flex items-center justify-between border-b pb-1 font-bold text-slate-500">
+                  <span>選擇適用人員</span>
+                  <button type="button" class="text-blue-600 hover:underline" onclick="toggleAllTplOptions('tpl-user-cb', true)">全選</button>
+                </div>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-user-cb rounded border-slate-300 text-blue-600" value="GLOBAL" data-name="全體通用" onchange="updateTplLabels()"><span>🌐 全體通用預設範本</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-user-cb rounded border-slate-300 text-blue-600" value="E10245" data-name="王大明" checked onchange="updateTplLabels()"><span>👤 王大明 (E10245)</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-user-cb rounded border-slate-300 text-blue-600" value="E10299" data-name="李小健" onchange="updateTplLabels()"><span>👤 李小健 (E10299)</span></label>
+                <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer font-semibold"><input type="checkbox" class="tpl-user-cb rounded border-slate-300 text-blue-600" value="E10288" data-name="張美麗" onchange="updateTplLabels()"><span>👤 張美麗 (E10288)</span></label>
+              </div>
+            </div>
+
+          </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2 shadow-2xs">
-          <label class="block text-xs md:text-sm font-black text-slate-800">信件主旨範本 (Subject)：</label>
-          <div class="relative">
-            <input type="text" id="tplSubject" value="[重要對帳通知] {{公司名稱}} 每週應收帳款對帳清冊與付款提醒 (基準日: {{基準日期}})" class="w-full h-11 pl-9 pr-3 bg-slate-50 border border-slate-300 rounded-xl text-xs md:text-sm font-black text-blue-700 focus:ring-2 focus:ring-blue-500 shadow-2xs">
-            <i class="fa-solid fa-heading absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <!-- 郵件通知內文範本區塊 -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+            <label class="font-black text-slate-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-pen-nib text-blue-700"></i> 郵件通知內文範本：
+            </label>
+            <span class="text-xs md:text-sm text-slate-600 font-extrabold">系統將依發送日期比對有效期間與排程自動帶入</span>
           </div>
+
+          <!-- 生效日與截止日 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-blue-50/70 p-3 rounded-xl border border-blue-200">
+            <div>
+              <label class="font-black text-blue-950 block mb-1 text-xs md:text-sm flex items-center gap-2">
+                <i class="fa-solid fa-calendar-plus text-blue-700"></i> 內文生效日：
+              </label>
+              <input type="text" id="tpl-valid-from" value="2026/01/01" placeholder="YYYY/MM/DD" class="w-full p-2.5 border border-blue-300 rounded-lg font-mono text-sm font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600">
+            </div>
+            <div>
+              <label class="font-black text-blue-950 block mb-1 text-xs md:text-sm flex items-center gap-2">
+                <i class="fa-solid fa-calendar-xmark text-blue-700"></i> 內文截止日：
+              </label>
+              <input type="text" id="tpl-valid-to" value="2099/12/31" placeholder="YYYY/MM/DD" class="w-full p-2.5 border border-blue-300 rounded-lg font-mono text-sm font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600">
+            </div>
+          </div>
+
+          <!-- 通知日期及排程 -->
+          <div class="bg-amber-50/80 p-3 rounded-xl border border-amber-300 space-y-3">
+            <div class="font-black text-amber-950 text-sm flex items-center gap-2 border-b border-amber-200 pb-1.5">
+              <i class="fa-solid fa-business-time text-amber-700"></i> ⏰ 通知日期及排程設定：
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-black text-slate-800 whitespace-nowrap">(1) 從</span>
+                <input type="text" id="tpl-schedule-date" value="2026/08/27" class="w-32 p-2 border border-slate-300 rounded-lg bg-white font-mono text-sm font-black focus:outline-none focus:border-blue-600" placeholder="YYYY/MM/DD">
+                <span class="font-black text-slate-800">日期、</span>
+                <input type="number" id="tpl-schedule-hour" value="9" min="0" max="23" class="w-16 p-2 border border-slate-300 rounded-lg bg-white font-mono text-sm font-black text-center focus:outline-none focus:border-blue-600">
+                <span class="font-black text-slate-800">時 /</span>
+                <input type="number" id="tpl-schedule-min" value="0" min="0" max="59" class="w-16 p-2 border border-slate-300 rounded-lg bg-white font-mono text-sm font-black text-center focus:outline-none focus:border-blue-600">
+                <span class="font-black text-slate-800">分開始</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="font-black text-slate-800 whitespace-nowrap">(2) 每隔</span>
+                <input type="number" id="tpl-schedule-interval" value="1" min="1" class="w-16 p-2 border border-slate-300 rounded-lg bg-white font-mono text-sm font-black text-center focus:outline-none focus:border-blue-600">
+                <select id="tpl-schedule-unit" class="p-2 border border-slate-300 rounded-lg bg-white font-black text-sm text-blue-950 focus:outline-none focus:border-blue-600">
+                  <option value="週" selected>週 (預設每週四)</option>
+                  <option value="天">天</option>
+                  <option value="小時">小時</option>
+                </select>
+                <span class="font-black text-slate-800">寄送</span>
+              </div>
+            </div>
+          </div>
+
+          <textarea id="tpl-body-text" rows="5" class="w-full p-3.5 border border-slate-300 rounded-xl text-sm font-sans text-slate-900 font-medium leading-relaxed focus:outline-none focus:border-blue-600 shadow-inner bg-slate-50/50"></textarea>
         </div>
 
-        <div class="p-3.5 bg-blue-50/90 border border-blue-200 rounded-2xl space-y-2">
-          <div class="flex items-center justify-between text-xs font-black text-blue-900">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-tags text-blue-600"></i> 點擊下方變數標籤，自動插入游標位置：</span>
-            <span class="text-[11px] text-blue-700 font-semibold">系統寄送時自動依發票動態替換</span>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button type="button" onclick="insertTplTag('{{客戶名稱}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{客戶名稱}}</button>
-            <button type="button" onclick="insertTplTag('{{基準日期}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{基準日期}}</button>
-            <button type="button" onclick="insertTplTag('{{公司名稱}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{公司名稱}}</button>
-            <button type="button" onclick="insertTplTag('{{發票明細表格}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{發票明細表格}}</button>
-            <button type="button" onclick="insertTplTag('{{逾期金額彙總}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{逾期金額彙總}}</button>
-            <button type="button" onclick="insertTplTag('{{業務人員}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{業務人員}}</button>
-            <button type="button" onclick="insertTplTag('{{押匯人員}}')" class="px-2.5 py-1 bg-white hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold shadow-2xs transition">+ {{押匯人員}}</button>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2 shadow-2xs">
-          <div class="flex items-center justify-between">
-            <label class="block text-xs md:text-sm font-black text-slate-800">信件正文內容範本 (Body Text)：</label>
-            <button type="button" onclick="previewTemplateRender()" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 transition">
-              <i class="fa-solid fa-eye"></i> 即時渲染預覽
+        <!-- 郵件通知內文庫區塊 -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+            <span class="font-black text-slate-950 text-base flex items-center gap-2">
+              <i class="fa-solid fa-box-archive text-blue-700"></i> 📚 郵件通知內文庫 (歷程紀錄與快速引用)：
+            </span>
+            <button type="button" id="btn-toggle-library-expand" onclick="toggleLibraryExpand()" class="px-3 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100 font-bold text-xs flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-angles-down text-sm"></i> <span>查看全部內文庫 (<span id="library-total-count">2</span>)</span>
             </button>
           </div>
-          <textarea id="tplBody" rows="11" class="w-full p-4 bg-slate-50 border border-slate-300 rounded-2xl text-xs md:text-sm font-medium text-slate-800 leading-relaxed focus:ring-2 focus:ring-blue-500 font-mono">
-尊敬的 {{客戶名稱}} 財務長 / 付款負責人 您好：
 
-感謝貴公司長期以來對 {{公司名稱}} 的鼎力支持。
-隨信檢附貴司截至 {{基準日期}} 止之最新出口應收帳款對帳清冊，相關重點說明如下：
-
-【應收帳款重點提醒】：
-1. 本期到期與逾期款項明細已完整詳列於隨信附呈之 Excel 試算表及下列清單。
-2. 若款項已依約安排電匯，敬請回傳匯款水單 (Bank Swift Advice) 以利本處加速核銷銷帳。
-3. 若對帳目金額或出貨單據有任何疑問，敬請隨時與權責業務同仁 {{業務人員}} 或押匯專員 {{押匯人員}} 聯繫確認。
-
-{{發票明細表格}}
-
-祝 頌商祺
-
-{{公司名稱}} 台北國際事務處 / 銷售事業群 敬啟
-          </textarea>
+          <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-xs max-h-[320px] custom-scrollbar">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-50 text-slate-700 font-black border-b border-slate-200">
+                <tr>
+                  <th class="p-2.5 text-center w-12">NO</th>
+                  <th class="p-2.5 w-44">適用維度 (含國外倉)</th>
+                  <th class="p-2.5 text-center w-40">有效期間</th>
+                  <th class="p-2.5">內文完整內容 (自動換行 / 可調整欄高)</th>
+                  <th class="p-2.5 text-center w-24">操作</th>
+                </tr>
+              </thead>
+              <tbody id="template-library-tbody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
+            </table>
+          </div>
         </div>
+
       </div>
 
-      <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-between">
-        <span class="text-xs text-slate-500 font-semibold">💡 儲存後將自動套用於所有每週定期自動排程寄送信件</span>
-        <div class="flex items-center gap-3">
-          <button onclick="closeEmailTemplateModal()" class="px-5 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition">
-            取消
-          </button>
-          <button onclick="saveEmailTemplate()" class="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md transition active:scale-98 flex items-center gap-1.5">
-            <i class="fa-solid fa-floppy-disk"></i> 儲存公版範本
-          </button>
-        </div>
+      <div class="px-6 py-4 bg-white border-t border-slate-200 flex justify-end gap-3 items-center">
+        <button type="button" class="px-5 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition" onclick="closeTemplateEditorModal()">取消</button>
+        <button type="button" class="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md transition active:scale-98 flex items-center gap-1.5" onclick="initiateSaveTemplate()">
+          <i class="fa-solid fa-floppy-disk text-yellow-300"></i> 儲存內文範本設定
+        </button>
       </div>
     </div>
   </div>
 
+  <!-- MODAL: 儲存內文變更左右對比確認對話框 -->
+  <div class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" id="template-diff-confirm-modal">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[900px] max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/30 border border-amber-400/50 flex items-center justify-center text-amber-400 text-lg shadow">
+            <i class="fa-solid fa-code-compare"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-base md:text-lg text-white tracking-wide">內文範本變更確認</h3>
+            <p class="text-xs text-slate-300 font-semibold">請檢視修改前後的內容對比，並選擇是否將原範本保留至「郵件通知內文庫」</p>
+          </div>
+        </div>
+        <button type="button" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-lg transition" onclick="closeDiffConfirmModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
 
-  <!-- ========================================================================= -->
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto bg-slate-50 custom-scrollbar">
+        <div class="p-3.5 bg-amber-100 border border-amber-300 rounded-xl text-xs md:text-sm font-bold text-amber-950 flex items-center gap-2.5">
+          <i class="fa-solid fa-circle-question text-amber-700 text-lg"></i>
+          <span>系統偵測到內文已進行修改。請問您是否需要將「修改前」的原範本保留至【郵件通知內文庫】供日後再次引用？</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-300 shadow-xs space-y-2">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+              <span class="font-black text-slate-800 text-xs md:text-sm flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-slate-600"></i> 修改前內容 (原範本)：
+              </span>
+              <span class="text-xs font-mono text-slate-600 font-bold" id="diff-old-period"></span>
+            </div>
+            <div id="diff-old-body" class="p-3 bg-slate-100 rounded-lg border border-slate-300 text-xs md:text-sm text-slate-800 font-sans leading-relaxed whitespace-pre-wrap min-h-[160px] max-h-[220px] overflow-y-auto font-medium custom-scrollbar"></div>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border-2 border-blue-400 shadow-xs space-y-2">
+            <div class="flex items-center justify-between pb-2 border-b border-blue-200">
+              <span class="font-black text-blue-950 text-xs md:text-sm flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-blue-700"></i> 修改後內容 (新設定)：
+              </span>
+              <span class="text-xs font-mono text-blue-800 font-black" id="diff-new-period"></span>
+            </div>
+            <div id="diff-new-body" class="p-3 bg-blue-50/70 rounded-lg border border-blue-300 text-xs md:text-sm text-slate-950 font-sans font-bold leading-relaxed whitespace-pre-wrap min-h-[160px] max-h-[220px] overflow-y-auto custom-scrollbar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 bg-white border-t border-slate-200 flex flex-wrap justify-end gap-3 items-center">
+        <button type="button" class="px-5 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition" onclick="closeDiffConfirmModal()">
+          返回編輯
+        </button>
+        <button type="button" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-black text-xs transition" onclick="confirmSaveTemplateAction(false)">
+          <i class="fa-solid fa-file-excel text-slate-500 mr-1"></i> 不保留原範本 (直接覆蓋儲存)
+        </button>
+        <button type="button" class="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md transition active:scale-98 flex items-center gap-1.5" onclick="confirmSaveTemplateAction(true)">
+          <i class="fa-solid fa-box-archive text-yellow-300"></i> 保留原範本至內文庫並儲存
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: 異常案件手動補發視窗 -->
-  <!-- ========================================================================= -->
   <div id="resendModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[640px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -1045,10 +1210,7 @@
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
   <!-- MODAL: 資料篩選與檢視條件設定 -->
-  <!-- ========================================================================= -->
   <div id="viewFilterModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[980px] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -1198,10 +1360,7 @@
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
-  <!-- MODAL: 常用通用附件與 Email 檢視彈窗 -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: 通用檔案檢視 -->
   <div id="attachmentModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[560px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -1220,9 +1379,7 @@
       </div>
 
       <div class="p-6 space-y-3 bg-slate-50/50">
-        <div id="attachmentFilesContainer" class="space-y-2">
-          <!-- Injected dynamically -->
-        </div>
+        <div id="attachmentFilesContainer" class="space-y-2"></div>
       </div>
 
       <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-end">
@@ -1233,6 +1390,7 @@
     </div>
   </div>
 
+  <!-- MODAL: Email 詳細內容檢視 -->
   <div id="emailDetailModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[760px] max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -1282,10 +1440,7 @@
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
   <!-- MODAL: 管理進度操作設定 -->
-  <!-- ========================================================================= -->
   <div id="mgmtActionModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[460px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -1334,10 +1489,7 @@
     </div>
   </div>
 
-
-  <!-- ========================================================================= -->
-  <!-- MODAL: AI 摘要提示詞設定彈窗 -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: AI 摘要提示詞設定 -->
   <div id="promptConfigModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-[620px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -1363,7 +1515,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- ========================================================================= -->
   <!-- JAVASCRIPT LOGIC ENGINE -->
@@ -1644,7 +1795,7 @@
       }
     ];
 
-    // Rich Test Data containing FENC, OIHN, FNIS sections across multiple years
+    // Rich Test Data containing FENC, OIHN, FNIS sections across 2026 & 2025
     let emailHistoryList = [
       {
         id: "EMAIL-001",
@@ -1671,7 +1822,7 @@
         files: ["AR_Weekly_Report_FENC_PET_20260827.xlsx"]
       },
       {
-        id: "EMAIL-005",
+        id: "EMAIL-003",
         seller: "FENC",
         exporter: "FENC",
         bg: "固聚酯粒",
@@ -1680,14 +1831,14 @@
         dateTime: "2025/12/28 09:30:00",
         weekday: "星期日",
         sender: "系統自動寄出",
-        files: ["2025年度固聚總結.xlsx"]
+        files: ["AR_Weekly_Report_FENC_PET_20251228.xlsx"]
       },
       {
-        id: "EMAIL-003",
+        id: "EMAIL-004",
         seller: "OIHN",
         exporter: "FENC",
         bg: "固聚酯粒",
-        dest: "歐洲倉各區",
+        dest: "歐洲各區",
         whType: "歐洲倉",
         dateTime: "2026/08/28 10:15:30",
         weekday: "星期五",
@@ -1695,7 +1846,7 @@
         files: ["AR_Weekly_Report_OIHN_Europe_20260828.xlsx", "Warehouse_Release_Voucher.pdf"]
       },
       {
-        id: "EMAIL-004",
+        id: "EMAIL-005",
         seller: "FNIS",
         exporter: "FEAV",
         bg: "成衣",
@@ -1708,20 +1859,48 @@
       }
     ];
 
-    let emailTemplates = {
-      "固聚酯粒": {
-        subject: "[重要對帳通知] {{公司名稱}} 固聚酯粒每週應收帳款對帳清冊與付款提醒 (基準日: {{基準日期}})",
-        body: `尊敬的 {{客戶名稱}} 財務長 / 付款負責人 您好：\n\n感謝貴公司長期以來對 {{公司名稱}} 的鼎力支持。\n隨信檢附貴司截至 {{基準日期}} 止之最新出口應收帳款對帳清冊，相關重點說明如下：\n\n【應收帳款重點提醒】：\n1. 本期到期與逾期款項明細已完整詳列於隨信附呈之 Excel 試算表及下列清單。\n2. 若款項已依約安排電匯，敬請回傳匯款水單 (Bank Swift Advice) 以利本處加速核銷銷帳。\n3. 若對帳目金額或出貨單據有任何疑問，敬請隨時與權責業務同仁 {{業務人員}} 或押匯專員 {{押匯人員}} 聯繫確認。\n\n{{發票明細表格}}\n\n祝 頌商祺\n\n{{公司名稱}} 台北國際事務處 / 固聚酯粒事業群 敬啟`
+    // Comprehensive Template Store from Version 04
+    let templateLibraryData = {
+      'FENC_FENC_solid_pet_ALL_非國外倉_GLOBAL': {
+        from: '2026/01/01',
+        to: '2099/12/31',
+        scheduleDate: '2026/08/27',
+        scheduleHour: 9,
+        scheduleMin: 0,
+        scheduleInterval: 1,
+        scheduleUnit: '週',
+        warehouse: '非國外倉',
+        region: 'ALL',
+        body: '各位長官、業務同仁好：\n\n檢附本週【固聚酯粒】賣方＝FENC、出口商＝FENC 之每週應收帳款最新追蹤報表。\n請相關經手同仁依期程向買方確認付款進度並於系統完成回報。'
       },
-      "短纖": {
-        subject: "[重要對帳通知] {{公司名稱}} 短纖事業部 出口應收帳款明細 (基準日: {{基準日期}})",
-        body: `尊敬的 {{客戶名稱}} 負責人 您好：\n\n隨信附上短纖出口帳款清冊。請協助核對並於到期日內安排結清。\n如有水單請即刻回傳以利沖帳，謝謝！\n\n權責業務：{{業務人員}}\n押匯人員：{{押匯人員}}\n\n{{公司名稱}} 短纖團隊 敬啟`
+      'FENC_FENC_solid_pet_南亞_非國外倉_E10245': {
+        from: '2026/01/01',
+        to: '2026/12/31',
+        scheduleDate: '2026/08/27',
+        scheduleHour: 14,
+        scheduleMin: 30,
+        scheduleInterval: 1,
+        scheduleUnit: '週',
+        warehouse: '非國外倉',
+        region: '南亞',
+        body: '各位主管好：我是業務王大明，檢附本週負責之【固聚酯粒 - 南亞地區】重點客戶應收帳款催繳清冊。目前已有 2 筆款項進入協商還款階段，詳見附件報表。'
       },
-      "成衣": {
-        subject: "[Payment Notice] {{公司名稱}} Garment Export AR Statement (Date: {{基準日期}})",
-        body: `Dear Valued Customer {{客戶名稱}},\n\nPlease find attached the weekly AR statement as of {{基準日期}}.\nKindly review and arrange payment at your earliest convenience.\n\nBest regards,\n{{公司名稱}} Garment Team`
+      'FNIS_FEAV_apparel_東南亞_非國外倉_GLOBAL': {
+        from: '2026/01/01',
+        to: '2026/12/31',
+        scheduleDate: '2026/08/27',
+        scheduleHour: 9,
+        scheduleMin: 5,
+        scheduleInterval: 1,
+        scheduleUnit: '週',
+        warehouse: '非國外倉',
+        region: '東南亞',
+        body: '各位長官好：檢附【成衣 - 東南亞地區】賣方＝FNIS、出口商＝FEAV 之每週應收帳款通知報表。'
       }
     };
+
+    let isLibraryExpanded = false;
+    let pendingSaveContext = null;
 
     let mgmtProgressData = [
       {
@@ -1831,7 +2010,7 @@
       renderCustomerCards();
       renderMgmtTable();
       renderAbnormalTable();
-      onEmailFilterChange();
+      applyEmailFilterAndRender();
       updateTabBadges();
       closeAllDropdownsOnClickOutside();
     });
@@ -1913,7 +2092,7 @@
         emailSec.classList.remove('hidden');
         emailBtn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-xs transition bg-blue-600 text-white shadow-md";
         reportBtn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:text-white hover:bg-slate-800 transition";
-        onEmailFilterChange();
+        applyEmailFilterAndRender();
       }
     }
 
@@ -2108,7 +2287,7 @@
     }
 
     /* ---------------------------------------------------------
-       5. ABNORMAL & EMAIL NOTIFICATION HISTORIES (GROUPED DISPLAY)
+       5. ABNORMAL & EMAIL NOTIFICATION HISTORIES (LIVE DROPDOWN FILTER & SORTING)
        --------------------------------------------------------- */
     function renderAbnormalTable() {
       const tbody = document.getElementById('abnormalTableBody');
@@ -2141,60 +2320,65 @@
       });
     }
 
-    function onEmailFilterChange() {
-      const sellers = Array.from(document.querySelectorAll('input[name="em-seller-cb"]:checked')).map(cb => cb.value);
-      const exporters = Array.from(document.querySelectorAll('input[name="em-exp-cb"]:checked')).map(cb => cb.value);
-      const bgs = Array.from(document.querySelectorAll('input[name="em-bg-cb"]:checked')).map(cb => cb.value);
+    function applyEmailFilterAndRender() {
+      const buyerCheckboxes = Array.from(document.querySelectorAll('input[name="df-email-buyer-cb"]:checked'));
+      const expCheckboxes = Array.from(document.querySelectorAll('input[name="df-email-exp-cb"]:checked'));
+      const bgCheckboxes = Array.from(document.querySelectorAll('input[name="df-email-bg-cb"]:checked'));
 
-      document.getElementById('em-seller-label').textContent = sellers.length === 3 ? '賣方：全部' : (sellers.length === 0 ? '賣方：未選擇' : `賣方：已選 (${sellers.length})`);
-      document.getElementById('em-exp-label').textContent = exporters.length === 2 ? '出口商：全部' : (exporters.length === 0 ? '出口商：未選擇' : `出口商：已選 (${exporters.length})`);
-      document.getElementById('em-bg-label').textContent = bgs.length === 3 ? '事業群：全部' : (bgs.length === 0 ? '事業群：未選擇' : `事業群：已選 (${bgs.length})`);
+      const selectedBuyers = buyerCheckboxes.map(cb => cb.value);
+      const selectedExporters = expCheckboxes.map(cb => cb.value);
+      const selectedBgs = bgCheckboxes.map(cb => cb.value);
 
-      renderEmailHistoryTable();
-    }
+      // Update Labels
+      document.getElementById('df-email-buyer-label').textContent = selectedBuyers.length === 3 ? '買方: 全部' : (selectedBuyers.length === 0 ? '買方: 未選' : `買方: ${selectedBuyers.join(',')}`);
+      document.getElementById('df-email-exp-label').textContent = selectedExporters.length === 2 ? '出口商: 全部' : (selectedExporters.length === 0 ? '出口商: 未選' : `出口商: ${selectedExporters.join(',')}`);
+      document.getElementById('df-email-bg-label').textContent = selectedBgs.length === 3 ? '事業群: 全部' : (selectedBgs.length === 0 ? '事業群: 未選' : `事業群: ${selectedBgs.join(',')}`);
 
-    function renderEmailHistoryTable() {
-      const container = document.getElementById('emailGroupedCardsContainer');
-      const statsBadgeContainer = document.getElementById('emailYearStatsBadges');
-      container.innerHTML = '';
-      statsBadgeContainer.innerHTML = '';
-
-      const sellers = Array.from(document.querySelectorAll('input[name="em-seller-cb"]:checked')).map(cb => cb.value);
-      const exporters = Array.from(document.querySelectorAll('input[name="em-exp-cb"]:checked')).map(cb => cb.value);
-      const bgs = Array.from(document.querySelectorAll('input[name="em-bg-cb"]:checked')).map(cb => cb.value);
-
-      // Filter email histories according to checked items
-      let filteredList = emailHistoryList.filter(row => {
-        if (!sellers.includes(row.seller)) return false;
-        if (!exporters.includes(row.exporter)) return false;
-        if (!bgs.includes(row.bg)) return false;
+      // Filter
+      let filtered = emailHistoryList.filter(row => {
+        if (selectedBuyers.length > 0 && !selectedBuyers.includes(row.seller)) return false;
+        if (selectedExporters.length > 0 && !selectedExporters.includes(row.exporter)) return false;
+        if (selectedBgs.length > 0 && !selectedBgs.includes(row.bg)) return false;
         return true;
       });
 
-      // Calculate counts per year dynamically
+      // Calculate Yearly Badges
       const yearCountMap = {};
-      filteredList.forEach(item => {
-        const year = item.dateTime.substring(0, 4);
-        yearCountMap[year] = (yearCountMap[year] || 0) + 1;
+      filtered.forEach(r => {
+        const yr = r.dateTime.substring(0, 4);
+        yearCountMap[yr] = (yearCountMap[yr] || 0) + 1;
       });
 
-      const sortedYears = Object.keys(yearCountMap).sort((a, b) => b - a);
-      if (sortedYears.length === 0) {
-        statsBadgeContainer.innerHTML = `<span class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-lg border border-slate-200 font-bold">無符合條件紀錄</span>`;
-      } else {
-        statsBadgeContainer.innerHTML = sortedYears.map(yr => `
-          <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 font-black shadow-2xs">
-            ${yr} 迄今，共 ${yearCountMap[yr]} 筆發信紀錄
-          </span>
-        `).join('');
+      renderYearlyStatsBadges(yearCountMap);
+      renderEmailGroupedCards(filtered);
+    }
+
+    function renderYearlyStatsBadges(yearCountMap) {
+      const container = document.getElementById('emailYearlyBadgesContainer');
+      const years = Object.keys(yearCountMap).sort((a, b) => b - a);
+
+      if (years.length === 0) {
+        container.innerHTML = `<span class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-lg text-xs font-semibold">查無符合發信記錄</span>`;
+        return;
       }
+
+      container.innerHTML = years.map(yr => `
+        <div class="px-3 py-1 bg-blue-50 text-blue-800 border border-blue-200 rounded-xl text-xs font-black shadow-2xs">
+          <span>${yr} 迄今，共 <strong class="text-blue-700 text-sm font-black">${yearCountMap[yr]}</strong> 筆發信紀錄</span>
+        </div>
+      `).join('');
+    }
+
+    function renderEmailGroupedCards(filteredList) {
+      const container = document.getElementById('emailGroupedCardsContainer');
+      container.innerHTML = '';
 
       if (filteredList.length === 0) {
         container.innerHTML = `<div class="p-8 text-center text-slate-400 font-bold text-xs bg-slate-50 rounded-2xl border border-slate-200">目前無符合篩選條件之 Email 發信紀錄</div>`;
         return;
       }
 
-      // Group email histories by: Seller + Exporter + BG
+      // Group email histories by: Seller (買方) + Exporter (出口商) + BG (事業群)
       const groups = {};
       filteredList.forEach(item => {
         const key = `${item.seller}__${item.exporter}__${item.bg}`;
@@ -2208,10 +2392,10 @@
         const bodyId = `email-body-${gIdx}`;
         const arrowId = `email-arrow-${gIdx}`;
 
-        // SPECIFICATION 1: 由新至舊排序 email 通知記錄 (Sort descending by dateTime)
-        const sortedList = [...list].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+        // 由新至舊排序 email 通知紀錄 (Sort by datetime descending)
+        list.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
 
-        let rowsHtml = sortedList.map((row, rIdx) => `
+        let rowsHtml = list.map((row, rIdx) => `
           <tr class="hover:bg-slate-50 transition">
             <td class="p-3 text-center font-bold">${rIdx + 1}</td>
             <td class="p-3 font-bold">${row.seller}</td>
@@ -2221,9 +2405,7 @@
             </td>
             <td class="p-3 font-bold text-slate-800">${row.dest}</td>
             <td class="p-3">${row.whType}</td>
-            <td class="p-3 font-bold text-slate-700 font-mono">
-              <span>${row.dateTime}</span> <span class="text-slate-400 font-normal">(${row.weekday})</span>
-            </td>
+            <td class="p-3 font-bold text-slate-700">${row.dateTime} <span class="text-slate-400 font-normal">(${row.weekday})</span></td>
             <td class="p-3 font-bold">${row.sender}</td>
             <td class="p-3 text-center">
               <button onclick="openAttachmentModal('${row.id}', '${row.dest} 附加檔案', ${JSON.stringify(row.files).replace(/"/g, '&quot;')})" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded-xl font-black text-xs transition shadow-2xs">
@@ -2238,7 +2420,7 @@
           </tr>
         `).join('');
 
-        // SPECIFICATION 2: 預設值：全部折疊 (Body has hidden, Toggle button shows '▼ 展開明細')
+        // 預設值：全部折疊 (DEFAULT: body is hidden, arrow says ▼ 展開明細)
         const groupHtml = `
           <div id="${cardId}" class="rounded-2xl border-2 border-slate-200 bg-white shadow-xs overflow-hidden">
             <!-- Group Card Header -->
@@ -2249,7 +2431,7 @@
                 <span class="px-2.5 py-0.5 rounded-lg bg-white border border-slate-300 text-slate-800 shadow-2xs font-bold">出口商：${first.exporter}</span>
                 <span class="px-2.5 py-0.5 rounded-lg bg-blue-600 text-white shadow-2xs font-black">事業群：${first.bg}</span>
                 <span class="px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 font-black">
-                  📨 歷史發信：${sortedList.length} 筆
+                  📨 歷史發信：${list.length} 筆
                 </span>
               </div>
               <div class="flex items-center gap-2 text-xs font-black text-blue-700">
@@ -2257,7 +2439,7 @@
               </div>
             </div>
 
-            <!-- Group Card Table Body (DEFAULT COLLAPSED: hidden) -->
+            <!-- Group Card Table Body (Collapsed by Default) -->
             <div id="${bodyId}" class="hidden p-4 bg-slate-50/30">
               <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white">
                 <table class="w-full text-left text-xs border-collapse">
@@ -2297,16 +2479,12 @@
       renderManualSendFileList();
       
       const modal = document.getElementById('manualSendModal');
-      if (modal) {
-        modal.classList.remove('hidden');
-      }
+      if (modal) modal.classList.remove('hidden');
     }
 
     function closeManualSendModal() {
       const modal = document.getElementById('manualSendModal');
-      if (modal) {
-        modal.classList.add('hidden');
-      }
+      if (modal) modal.classList.add('hidden');
     }
 
     function syncManualSendTemplate(bg) {
@@ -2414,7 +2592,7 @@
           files: totalFiles
         });
 
-        onEmailFilterChange();
+        applyEmailFilterAndRender();
       }
 
       closeManualSendModal();
@@ -2422,81 +2600,297 @@
     }
 
     /* ---------------------------------------------------------
-       7. EMAIL TEMPLATE STUDIO
+       7. EMAIL TEMPLATE STUDIO & LIBRARY (FROM VERSION 04)
        --------------------------------------------------------- */
-    function openEmailTemplateModal() {
-      const bg = document.getElementById('tplSelectBg').value;
-      loadTemplateToModal(bg);
-      document.getElementById('emailTemplateModal').classList.remove('hidden');
+    function openTemplateEditorModal() {
+      updateTplLabels();
+      loadTemplateContent();
+      renderTemplateLibrary();
+      document.getElementById('template-editor-modal').classList.remove('hidden');
     }
 
-    function closeEmailTemplateModal() {
-      document.getElementById('emailTemplateModal').classList.add('hidden');
+    function closeTemplateEditorModal() {
+      document.getElementById('template-editor-modal').classList.add('hidden');
     }
 
-    function changeTplBg(bg) {
-      loadTemplateToModal(bg);
+    function toggleAllTplOptions(cbClass, state) {
+      document.querySelectorAll(`.${cbClass}`).forEach(cb => { cb.checked = state; });
+      updateTplLabels();
     }
 
-    function loadTemplateToModal(bg) {
-      const tpl = emailTemplates[bg] || emailTemplates["固聚酯粒"];
-      document.getElementById('tplSubject').value = tpl.subject;
-      document.getElementById('tplBody').value = tpl.body;
+    function updateTplLabels() {
+      const sellers = Array.from(document.querySelectorAll('.tpl-seller-cb:checked')).map(cb => cb.value);
+      const sAll = document.querySelectorAll('.tpl-seller-cb');
+      document.getElementById('tpl-seller-label').textContent = sellers.length === 0 ? '未選取' : (sellers.length === sAll.length ? `全 (${sAll.length})` : (sellers.length === 1 ? sellers[0] : `已選 ${sellers.length} 個`));
+
+      const exporters = Array.from(document.querySelectorAll('.tpl-exporter-cb:checked')).map(cb => cb.value);
+      document.getElementById('tpl-exporter-label').textContent = exporters.length > 0 ? exporters[0] : '未選取';
+
+      const bgs = Array.from(document.querySelectorAll('.tpl-bg-cb:checked'));
+      const bgAll = document.querySelectorAll('.tpl-bg-cb');
+      document.getElementById('tpl-bg-label').textContent = bgs.length === 0 ? '未選取' : (bgs.length === bgAll.length ? `全 (${bgAll.length})` : (bgs.length === 1 ? bgs[0].getAttribute('data-name') : `已選 ${bgs.length} 個`));
+
+      const regions = Array.from(document.querySelectorAll('.tpl-region-cb:checked')).map(cb => cb.value);
+      document.getElementById('tpl-region-label').textContent = regions.length === 0 ? '未選取' : (regions.includes('ALL') ? 'ALL (全部)' : (regions.length === 1 ? regions[0] : `已選 ${regions.length} 區`));
+
+      const warehouses = Array.from(document.querySelectorAll('.tpl-warehouse-cb:checked')).map(cb => cb.value);
+      const wAll = document.querySelectorAll('.tpl-warehouse-cb');
+      document.getElementById('tpl-warehouse-label').textContent = warehouses.length === 0 ? '未選取' : (warehouses.length === wAll.length ? `全 (${wAll.length})` : (warehouses.length === 1 ? warehouses[0] : `已選 ${warehouses.length} 個`));
+
+      const users = Array.from(document.querySelectorAll('.tpl-user-cb:checked'));
+      document.getElementById('tpl-user-label').textContent = users.length === 0 ? '未選取' : (users.length === 1 ? users[0].getAttribute('data-name') : `已選 ${users.length} 人`);
+
+      loadTemplateContent();
     }
 
-    function insertTplTag(tag) {
-      const textarea = document.getElementById('tplBody');
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-      textarea.value = text.substring(0, start) + tag + text.substring(end);
-      textarea.focus();
-      textarea.setSelectionRange(start + tag.length, start + tag.length);
-    }
+    function loadTemplateContent() {
+      const sellers = Array.from(document.querySelectorAll('.tpl-seller-cb:checked')).map(cb => cb.value);
+      const bgs = Array.from(document.querySelectorAll('.tpl-bg-cb:checked')).map(cb => cb.value);
+      const regions = Array.from(document.querySelectorAll('.tpl-region-cb:checked')).map(cb => cb.value);
+      const warehouses = Array.from(document.querySelectorAll('.tpl-warehouse-cb:checked')).map(cb => cb.value);
+      const users = Array.from(document.querySelectorAll('.tpl-user-cb:checked')).map(cb => cb.value);
 
-    function previewTemplateRender() {
-      const bg = document.getElementById('tplSelectBg').value;
-      const sub = document.getElementById('tplSubject').value
-        .replace(/{{客戶名稱}}/g, 'VINAY PLASTICS(IN)')
-        .replace(/{{公司名稱}}/g, '遠東新世紀 (FENC)')
-        .replace(/{{基準日期}}/g, '2026/09/01');
+      const sKey = sellers[0] || 'FENC';
+      const bKey = bgs[0] || 'solid_pet';
+      const rKey = regions.includes('ALL') ? 'ALL' : (regions[0] || 'ALL');
+      const wKey = warehouses[0] || '非國外倉';
+      const uKey = users[0] || 'GLOBAL';
+
+      const key = `${sKey}_FENC_${bKey}_${rKey}_${wKey}_${uKey}`;
+      const fallbackKey = `${sKey}_FENC_${bKey}_${rKey}_GLOBAL`;
       
-      const body = document.getElementById('tplBody').value
-        .replace(/{{客戶名稱}}/g, 'VINAY PLASTICS(IN)')
-        .replace(/{{公司名稱}}/g, '遠東新世紀 (FENC)')
-        .replace(/{{基準日期}}/g, '2026/09/01')
-        .replace(/{{業務人員}}/g, '王大明 (E10245)')
-        .replace(/{{押匯人員}}/g, '張智成')
-        .replace(/{{發票明細表格}}/g, '[系統動態產生發票表格: FTCS26020020, FTCS26020021 等合計 USD 100,000]')
-        .replace(/{{逾期金額彙總}}/g, 'USD 100,000 (逾期 170 天)');
+      const tplData = templateLibraryData[key] || templateLibraryData[fallbackKey];
+      const bgMap = { 'solid_pet': '固聚酯粒', 'staple_fiber': '短纖', 'apparel': '成衣' };
+      const bgName = bgMap[bKey] || bKey;
 
-      alert(`【信件即時預覽】\n\n主旨：${sub}\n\n內文：\n${body}`);
-    }
-
-    function resetDefaultTemplate() {
-      if (confirm("確定要將目前事業群的範本還原為系統原廠預設值嗎？")) {
-        const bg = document.getElementById('tplSelectBg').value;
-        if (bg === "固聚酯粒") {
-          document.getElementById('tplSubject').value = "[重要對帳通知] {{公司名稱}} 固聚酯粒每週應收帳款對帳清冊與付款提醒 (基準日: {{基準日期}})";
-          document.getElementById('tplBody').value = `尊敬的 {{客戶名稱}} 財務長 / 付款負責人 您好：\n\n感謝貴公司長期以來對 {{公司名稱}} 的鼎力支持。\n隨信檢附貴司截至 {{基準日期}} 止之最新出口應收帳款對帳清冊，相關重點說明如下：\n\n【應收帳款重點提醒】：\n1. 本期到期與逾期款項明細已完整詳列於隨信附呈之 Excel 試算表及下列清單。\n2. 若款項已依約安排電匯，敬請回傳匯款水單 (Bank Swift Advice) 以利本處加速核銷銷帳。\n3. 若對帳目金額或出貨單據有任何疑問，敬請隨時與權責業務同仁 {{業務人員}} 或押匯專員 {{押匯人員}} 聯繫確認。\n\n{{發票明細表格}}\n\n祝 頌商祺\n\n{{公司名稱}} 台北國際事務處 / 固聚酯粒事業群 敬啟`;
-        }
-        alert("已還原為預設範本！");
+      const defaultText = `各位長官、業務同仁好：\n\n檢附本週【${bgName}】賣方＝${sKey}、出口商＝FENC、國外倉類別＝${wKey} 之每週應收帳款最新追蹤報表。\n請相關經手同仁依期程向買方確認付款進度並於系統完成回報。`;
+      
+      if (tplData && typeof tplData === 'object') {
+        document.getElementById('tpl-valid-from').value = tplData.from || '2026/01/01';
+        document.getElementById('tpl-valid-to').value = tplData.to || '2099/12/31';
+        document.getElementById('tpl-schedule-date').value = tplData.scheduleDate || '2026/08/27';
+        document.getElementById('tpl-schedule-hour').value = tplData.scheduleHour !== undefined ? tplData.scheduleHour : 9;
+        document.getElementById('tpl-schedule-min').value = tplData.scheduleMin !== undefined ? tplData.scheduleMin : 0;
+        document.getElementById('tpl-schedule-interval').value = tplData.scheduleInterval || 1;
+        document.getElementById('tpl-schedule-unit').value = tplData.scheduleUnit || '週';
+        document.getElementById('tpl-body-text').value = tplData.body || defaultText;
+      } else {
+        document.getElementById('tpl-valid-from').value = '2026/01/01';
+        document.getElementById('tpl-valid-to').value = '2099/12/31';
+        document.getElementById('tpl-schedule-date').value = '2026/08/27';
+        document.getElementById('tpl-schedule-hour').value = 9;
+        document.getElementById('tpl-schedule-min').value = 0;
+        document.getElementById('tpl-schedule-interval').value = 1;
+        document.getElementById('tpl-schedule-unit').value = '週';
+        document.getElementById('tpl-body-text').value = typeof tplData === 'string' ? tplData : defaultText;
       }
     }
 
-    function saveEmailTemplate() {
-      const bg = document.getElementById('tplSelectBg').value;
-      const sub = document.getElementById('tplSubject').value.trim();
-      const body = document.getElementById('tplBody').value.trim();
+    function initiateSaveTemplate() {
+      const sellers = Array.from(document.querySelectorAll('.tpl-seller-cb:checked')).map(cb => cb.value);
+      const bgs = Array.from(document.querySelectorAll('.tpl-bg-cb:checked')).map(cb => cb.value);
+      const regions = Array.from(document.querySelectorAll('.tpl-region-cb:checked')).map(cb => cb.value);
+      const warehouses = Array.from(document.querySelectorAll('.tpl-warehouse-cb:checked')).map(cb => cb.value);
+      const users = Array.from(document.querySelectorAll('.tpl-user-cb:checked')).map(cb => cb.value);
 
-      if (!sub || !body) {
-        alert("主旨與內文皆不得為空！");
+      if (sellers.length === 0 || bgs.length === 0 || regions.length === 0 || warehouses.length === 0 || users.length === 0) {
+        alert('⚠️ 請確認所有維度皆至少勾選一項！');
         return;
       }
 
-      emailTemplates[bg] = { subject: sub, body: body };
-      alert(`✅ 已成功儲存【${bg}】事業群之每週 Email 通知公版範本！`);
-      closeEmailTemplateModal();
+      const sKey = sellers[0];
+      const bKey = bgs[0];
+      const rKey = regions[0];
+      const wKey = warehouses[0];
+      const uKey = users[0];
+      const primaryKey = `${sKey}_FENC_${bKey}_${rKey}_${wKey}_${uKey}`;
+
+      const oldData = templateLibraryData[primaryKey] || templateLibraryData[`${sKey}_FENC_${bKey}_${rKey}_GLOBAL`] || { from: '2026/01/01', to: '2099/12/31', body: '（尚無原範本內容）' };
+
+      const newFrom = document.getElementById('tpl-valid-from').value.trim() || '2026/01/01';
+      const newTo = document.getElementById('tpl-valid-to').value.trim() || '2099/12/31';
+      const sDate = document.getElementById('tpl-schedule-date').value.trim() || '2026/08/27';
+      const sHour = document.getElementById('tpl-schedule-hour').value;
+      const sMin = document.getElementById('tpl-schedule-min').value;
+      const sInterval = document.getElementById('tpl-schedule-interval').value;
+      const sUnit = document.getElementById('tpl-schedule-unit').value;
+      const newBody = document.getElementById('tpl-body-text').value.trim();
+
+      pendingSaveContext = {
+        sellers, bgs, regions, warehouses, users,
+        oldData: { ...oldData },
+        newData: { 
+          from: newFrom, 
+          to: newTo, 
+          scheduleDate: sDate, 
+          scheduleHour: sHour, 
+          scheduleMin: sMin, 
+          scheduleInterval: sInterval, 
+          scheduleUnit: sUnit, 
+          warehouse: wKey,
+          region: rKey,
+          body: newBody 
+        }
+      };
+
+      document.getElementById('diff-old-period').textContent = `有效期間：${oldData.from || '2026/01/01'} ~ ${oldData.to || '2099/12/31'}`;
+      document.getElementById('diff-old-body').textContent = oldData.body || '（原範本為空）';
+      document.getElementById('diff-new-period').textContent = `有效期間：${newFrom} ~ ${newTo} (排程: 每隔${sInterval}${sUnit})`;
+      document.getElementById('diff-new-body').textContent = newBody;
+
+      document.getElementById('template-diff-confirm-modal').classList.remove('hidden');
+    }
+
+    function closeDiffConfirmModal() {
+      document.getElementById('template-diff-confirm-modal').classList.add('hidden');
+      pendingSaveContext = null;
+    }
+
+    function confirmSaveTemplateAction(keepOldAsBackup) {
+      if (!pendingSaveContext) return;
+
+      const { sellers, bgs, regions, warehouses, users, oldData, newData } = pendingSaveContext;
+
+      if (keepOldAsBackup && oldData && oldData.body && oldData.body !== '（尚無原範本內容）') {
+        const backupTimestamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
+        const backupKey = `BACKUP_${sellers[0]}_FENC_${bgs[0]}_${regions[0]}_${warehouses[0]}_${backupTimestamp}`;
+        templateLibraryData[backupKey] = {
+          from: oldData.from || '2026/01/01',
+          to: oldData.to || '2099/12/31',
+          warehouse: warehouses[0],
+          region: regions[0],
+          body: oldData.body
+        };
+      }
+
+      sellers.forEach(s => {
+        bgs.forEach(b => {
+          regions.forEach(r => {
+            warehouses.forEach(w => {
+              users.forEach(u => {
+                const key = `${s}_FENC_${b}_${r}_${w}_${u}`;
+                templateLibraryData[key] = { ...newData, warehouse: w, region: r };
+              });
+            });
+          });
+        });
+      });
+
+      closeDiffConfirmModal();
+      renderTemplateLibrary();
+      alert(keepOldAsBackup ? '✅ 原範本已成功備份至內文庫，新範本已正式生效！' : '✅ 新內文範本已儲存生效！');
+    }
+
+    function toggleLibraryExpand() {
+      isLibraryExpanded = !isLibraryExpanded;
+      renderTemplateLibrary();
+    }
+
+    function renderTemplateLibrary() {
+      const tbody = document.getElementById('template-library-tbody');
+      const toggleBtn = document.getElementById('btn-toggle-library-expand');
+      const countSpan = document.getElementById('library-total-count');
+      if (!tbody) return;
+
+      const entries = Object.entries(templateLibraryData);
+      if (countSpan) countSpan.textContent = entries.length;
+
+      if (entries.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-500 font-bold text-sm">目前內文庫尚無儲存的範本資料。</td></tr>`;
+        if (toggleBtn) toggleBtn.style.display = 'none';
+        return;
+      }
+
+      if (toggleBtn) {
+        toggleBtn.style.display = entries.length > 2 ? 'inline-flex' : 'none';
+        toggleBtn.innerHTML = isLibraryExpanded 
+          ? `<i class="fa-solid fa-angles-up text-xs"></i> <span>收合內文庫 (顯示最新2筆)</span>`
+          : `<i class="fa-solid fa-angles-down text-xs"></i> <span>查看全部內文庫 (${entries.length} 筆)</span>`;
+      }
+
+      const displayEntries = isLibraryExpanded ? entries : entries.slice(0, 2);
+
+      let html = '';
+      const bgMap = { 'solid_pet': '固聚酯粒', 'staple_fiber': '短纖', 'apparel': '成衣' };
+
+      displayEntries.forEach(([key, val], idx) => {
+        const isBackup = key.startsWith('BACKUP_');
+        let shortTag = '';
+        let fullTooltip = '';
+
+        if (isBackup) {
+          shortTag = `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-black text-xs">歷史備份</span>`;
+          fullTooltip = '歷史自動備份檔';
+        } else {
+          const parts = key.split('_');
+          const s = parts[0];
+          const b = bgMap[parts[2]] || parts[2];
+          const r = val.region || parts[3];
+          const w = val.warehouse || (parts.length > 5 ? parts[4] : '非國外倉');
+          const u = parts[parts.length - 1] === 'GLOBAL' ? '全體' : parts[parts.length - 1];
+          
+          shortTag = `<span class="font-black text-slate-900 text-xs md:text-sm">${s} / ${b} (${r})</span>`;
+          fullTooltip = `賣方: ${s} | 出口商: FENC | 事業群: ${parts[2]} | 目的地區別: ${r} | 國外倉類別: ${w} | 適用人員: ${u}`;
+        }
+
+        const periodStr = `${val.from || '2026/01/01'} ~ ${val.to || '2099/12/31'}`;
+        const fullBodyText = val.body || '';
+
+        html += `
+          <tr>
+            <td class="p-2.5 text-center font-black text-slate-800 align-top">${idx + 1}</td>
+            <td class="p-2.5 text-sm align-top">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                ${shortTag}
+                <span class="group relative inline-block cursor-help">
+                  <i class="fa-solid fa-circle-info text-blue-600 text-xs hover:text-blue-800"></i>
+                  <span class="absolute left-0 bottom-full mb-2 hidden group-hover:block z-50 bg-slate-950 text-white text-xs p-2.5 rounded-lg shadow-xl whitespace-nowrap font-normal">
+                    📌 ${fullTooltip}
+                  </span>
+                </span>
+              </div>
+            </td>
+            <td class="p-2.5 text-center font-mono text-xs md:text-sm text-slate-700 font-bold align-top">${periodStr}</td>
+            <td class="p-2.5 text-sm text-slate-900 font-sans align-top">
+              <textarea readonly class="w-full p-2.5 bg-slate-100 rounded-lg border border-slate-300 text-sm font-sans text-slate-900 font-medium leading-relaxed focus:outline-none resize-y min-h-[60px]" style="height: 64px;">${fullBodyText}</textarea>
+            </td>
+            <td class="p-2.5 text-center align-top">
+              <div class="flex items-center justify-center gap-1.5 pt-1">
+                <button type="button" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-black transition shadow-2xs" onclick="applyFromLibrary('${key}')">
+                  <i class="fa-solid fa-arrow-turn-up text-xs"></i> 引用
+                </button>
+                <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition" title="刪除此範本" onclick="deleteFromLibrary('${key}')">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function applyFromLibrary(key) {
+      const data = templateLibraryData[key];
+      if (!data) return;
+
+      document.getElementById('tpl-valid-from').value = data.from || '2026/01/01';
+      document.getElementById('tpl-valid-to').value = data.to || '2099/12/31';
+      document.getElementById('tpl-schedule-date').value = data.scheduleDate || '2026/08/27';
+      document.getElementById('tpl-schedule-hour').value = data.scheduleHour !== undefined ? data.scheduleHour : 9;
+      document.getElementById('tpl-schedule-min').value = data.scheduleMin !== undefined ? data.scheduleMin : 0;
+      document.getElementById('tpl-schedule-interval').value = data.scheduleInterval || 1;
+      document.getElementById('tpl-schedule-unit').value = data.scheduleUnit || '週';
+      document.getElementById('tpl-body-text').value = data.body || '';
+
+      alert('📥 已成功將範本完整引用至上方編輯器！');
+    }
+
+    function deleteFromLibrary(key) {
+      if (confirm('確定要從內文庫中刪除該筆範本嗎？')) {
+        delete templateLibraryData[key];
+        renderTemplateLibrary();
+      }
     }
 
     /* ---------------------------------------------------------
@@ -2542,7 +2936,7 @@
       abnormalNotices = abnormalNotices.filter(a => a.caseId !== currentResendingCaseId);
 
       renderAbnormalTable();
-      onEmailFilterChange();
+      applyEmailFilterAndRender();
       closeResendModal();
       alert(`✅ 案件【${currentResendingCaseId}】已成功手動補發郵件，並已寫入每週通知歷程！`);
     }
@@ -2688,13 +3082,6 @@
       document.execCommand('insertHTML', false, tableHtml);
     }
 
-    function insertImageToEditor() {
-      const url = prompt("請輸入欲插入圖片之 URL 或貼上 Data URL：", "https://via.placeholder.com/400x120?text=Payment+Voucher+Sample");
-      if (url) {
-        document.execCommand('insertImage', false, url);
-      }
-    }
-
     function insertPhraseToEditor(checkbox, text) {
       const editor = document.getElementById('batchRichEditorContent');
       if (checkbox.checked) {
@@ -2739,7 +3126,7 @@
     }
 
     /* ---------------------------------------------------------
-       11. HISTORY MODAL WITH DYNAMIC ATTACHMENT HANDLING
+       11. HISTORY MODAL OPERATIONS WITH DYNAMIC ATTACHMENT
        --------------------------------------------------------- */
     function openHistoryModal(invId) {
       currentEditingHistInvoiceId = invId;
@@ -3052,93 +3439,11 @@
 
     function openExportModal(format = 'xlsx') {
       document.getElementById('exportDropdownMenu').classList.add('hidden');
-      setExportFormat(format);
-      refreshExportPreviewData();
-      document.getElementById('exportModal').classList.remove('hidden');
+      executeExportDirect(format);
     }
 
-    function closeExportModal() {
-      document.getElementById('exportModal').classList.add('hidden');
-    }
-
-    function setExportFormat(fmt) {
-      currentExportFormat = fmt;
-      const btnXlsx = document.getElementById('expFormatBtn-xlsx');
-      const btnPdf = document.getElementById('expFormatBtn-pdf');
-      const textPreview = document.getElementById('expPreviewFormatText');
-
-      if (fmt === 'xlsx') {
-        btnXlsx.className = "px-3 py-1 rounded-lg text-xs font-black transition bg-blue-600 text-white shadow";
-        btnPdf.className = "px-3 py-1 rounded-lg text-xs font-black transition text-slate-300 hover:text-white";
-        textPreview.textContent = "Excel 試算表 (.xlsx)";
-      } else {
-        btnPdf.className = "px-3 py-1 rounded-lg text-xs font-black transition bg-blue-600 text-white shadow";
-        btnXlsx.className = "px-3 py-1 rounded-lg text-xs font-black transition text-slate-300 hover:text-white";
-        textPreview.textContent = "PDF 格式文件 (.pdf)";
-      }
-    }
-
-    function updateExpFilterLabels() {
-      refreshExportPreviewData();
-    }
-
-    function refreshExportPreviewData() {
-      const tbody = document.getElementById('exportPreviewTableBody');
-      tbody.innerHTML = '';
-
-      const sellers = Array.from(document.querySelectorAll('input[name="exp-seller-cb"]:checked')).map(cb => cb.value);
-      const exporters = Array.from(document.querySelectorAll('input[name="exp-exporter-cb"]:checked')).map(cb => cb.value);
-      const bgs = Array.from(document.querySelectorAll('input[name="exp-bg-cb"]:checked')).map(cb => cb.value);
-      const whs = Array.from(document.querySelectorAll('input[name="exp-wh-cb"]:checked')).map(cb => cb.value);
-      const persons = Array.from(document.querySelectorAll('input[name="exp-person-cb"]:checked')).map(cb => cb.value);
-
-      document.getElementById('exp-seller-label').textContent = sellers.length === 3 ? '全 (3)' : `已選 ${sellers.length} 項`;
-      document.getElementById('exp-exporter-label').textContent = exporters.length === 2 ? '全 (2)' : `已選 ${exporters.length} 項`;
-      document.getElementById('exp-bg-label').textContent = bgs.length === 3 ? '全 (3)' : `已選 ${bgs.length} 項`;
-      document.getElementById('exp-wh-label').textContent = whs.length === 2 ? '全 (2)' : `已選 ${whs.length} 項`;
-      document.getElementById('exp-person-label').textContent = persons.length === 6 ? '全 (6)' : `已選 ${persons.length} 項`;
-
-      let list = mgmtProgressData.filter(m => {
-        if (m.status === '不轉出') return false;
-        if (!sellers.includes(m.seller)) return false;
-        if (!exporters.includes(m.exporter)) return false;
-        if (!bgs.includes(m.bg)) return false;
-        if (!whs.includes(m.whType)) return false;
-        const matchPerson = persons.includes(m.sales) || persons.includes(m.negotiator);
-        if (!matchPerson) return false;
-        return true;
-      });
-
-      document.getElementById('expPreviewMatchCount').textContent = `符合筆數：${list.length} 筆`;
-
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" class="p-6 text-center text-slate-400 font-bold">無符合篩選條件之轉出資料</td></tr>`;
-        return;
-      }
-
-      list.forEach((m, idx) => {
-        const tr = `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-2.5 text-center font-bold">${idx + 1}</td>
-            <td class="p-2.5 font-mono font-black text-blue-700">${m.invoiceNo}</td>
-            <td class="p-2.5 text-center font-bold">${m.seq}</td>
-            <td class="p-2.5 font-bold text-slate-800">${m.customerName}</td>
-            <td class="p-2.5 font-bold">${m.bg}</td>
-            <td class="p-2.5 text-right font-black">${m.amount.toLocaleString()}</td>
-            <td class="p-2.5 text-center font-bold">${m.currency}</td>
-            <td class="p-2.5 text-center font-black ${m.overdueDays >= 16 ? 'text-rose-600' : 'text-amber-600'}">${m.overdueDays}</td>
-            <td class="p-2.5 font-bold">${m.sales}</td>
-            <td class="p-2.5 font-bold">${m.negotiator}</td>
-            <td class="p-2.5 text-slate-700 leading-relaxed">${m.content}</td>
-            <td class="p-2.5 text-center font-mono font-bold text-slate-600 whitespace-nowrap">${m.transferTime}</td>
-          </tr>
-        `;
-        tbody.insertAdjacentHTML('beforeend', tr);
-      });
-    }
-
-    function executeExportDownload() {
-      if (currentExportFormat === 'xlsx') {
+    function executeExportDirect(format = 'xlsx') {
+      if (format === 'xlsx') {
         const rows = [
           ["NO", "發票號碼", "項次", "客戶名稱", "事業群", "收款金額", "幣別", "逾期天數", "責任業務", "押匯人員", "處理進度說明", "轉入正式時間"]
         ];
@@ -3168,7 +3473,6 @@
         a.download = `AR_Management_Progress_${new Date().toISOString().substring(0,10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-        closeExportModal();
       } else {
         alert("正在產生 PDF 列印視窗...");
         window.print();
@@ -3189,14 +3493,18 @@
     function toggleMultiDropdown(menuId) {
       const menu = document.getElementById(menuId);
       const isHidden = menu.classList.contains('hidden');
-      document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+      document.querySelectorAll('[id$="-menu"], [id$="-panel"]').forEach(m => m.classList.add('hidden'));
       if (isHidden) menu.classList.remove('hidden');
     }
 
     function toggleAllCheckboxes(name, checked) {
       document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = checked);
-      if (name.startsWith('df-')) updateDfFilterLabels();
-      if (name.startsWith('exp-')) updateExpFilterLabels();
+      if (name.startsWith('df-exp-') || name.startsWith('df-seller-') || name.startsWith('df-bg-') || name.startsWith('df-buyer-')) {
+        updateDfFilterLabels();
+      }
+      if (name.startsWith('df-email-')) {
+        applyEmailFilterAndRender();
+      }
     }
 
     function updateDfFilterLabels() {
@@ -3213,7 +3521,6 @@
 
     function applyAllConditions() {
       const baseDate = document.getElementById('baseDateInput').value;
-      const simUser = document.getElementById('simulatedUserSelect').value;
       const userRole = document.getElementById('userRoleSelect').value;
 
       document.getElementById('headerBaseDateBadge').textContent = baseDate.replace(/-/g, '/');
@@ -3233,7 +3540,7 @@
       closeViewFilterModal();
       renderCustomerCards();
       renderMgmtTable();
-      onEmailFilterChange();
+      applyEmailFilterAndRender();
     }
 
     /* ---------------------------------------------------------
@@ -3244,7 +3551,7 @@
       const container = document.getElementById('attachmentFilesContainer');
       container.innerHTML = '';
 
-      files.forEach((fn, idx) => {
+      files.forEach((fn) => {
         const item = `
           <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-2xl shadow-2xs hover:bg-blue-50/40 transition">
             <div class="flex items-center gap-2.5 truncate">
@@ -3353,15 +3660,15 @@
     function refreshEmailHistory() {
       const nowStr = getNowFormattedStr();
       document.getElementById('emailLastRefreshTimestamp').textContent = nowStr;
-      onEmailFilterChange();
+      applyEmailFilterAndRender();
       renderAbnormalTable();
       alert(`Email 通知歷程與異常清冊已重新整理！\n最新整理時間：${nowStr}`);
     }
 
     function closeAllDropdownsOnClickOutside() {
       window.addEventListener('click', (e) => {
-        if (!e.target.closest('[id$="-btn"]') && !e.target.closest('[id$="-menu"]')) {
-          document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+        if (!e.target.closest('.dropdown-container') && !e.target.closest('[id$="-btn"]') && !e.target.closest('[id$="-menu"]') && !e.target.closest('[id$="-panel"]')) {
+          document.querySelectorAll('[id$="-menu"], [id$="-panel"]').forEach(m => m.classList.add('hidden'));
         }
         if (!e.target.closest('#exportDropdownMenu') && !e.target.closest('button[onclick*="toggleExportMenu"]')) {
           const m = document.getElementById('exportDropdownMenu');
